@@ -1,0 +1,1 @@
+{"bagging_temperature": 1.0, "leaf_estimation_iterations": 2.0, "od_type": "Iter", "od_wait": 40, "loss_function": "Logloss", "l2_leaf_reg": 3.0, "depth": 2.0, "learning_rate": 0.3, "_feature_importance": [26.595459131593525, 61.30895421278302, 0.0, 0.0, 7.4510436862574085, 0.0, 0.0, 4.644542969366054]}
