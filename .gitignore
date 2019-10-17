@@ -105,3 +105,4 @@ venv.bak/
 
 # Custom files and folders
 catboost_info/
+data/
