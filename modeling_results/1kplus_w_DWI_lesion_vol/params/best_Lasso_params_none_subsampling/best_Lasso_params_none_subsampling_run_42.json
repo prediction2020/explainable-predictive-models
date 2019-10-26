@@ -1,1 +1,0 @@
-{"C": 6.2506, "class_weight": null, "dual": false, "fit_intercept": false, "intercept_scaling": 1, "max_iter": 10000, "multi_class": "ovr", "n_jobs": -1, "penalty": "l1", "random_state": null, "solver": "saga", "tol": 0.001, "verbose": 0, "warm_start": false}
