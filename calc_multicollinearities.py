@@ -2,12 +2,9 @@ import pandas as pd
 import numpy as np
 import os
 import yaml
-import sys
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn import preprocessing
-from sklearn.metrics import matthews_corrcoef
-import pandas.core.indexes
-sys.modules['pandas.indexes'] = pandas.core.indexes
+
 
 def mulcolfunc(filename):
 
@@ -49,32 +46,7 @@ def mulcolfunc(filename):
 
 
 
-def phi_coef(filename):
-	df = pd.read_pickle(filename)
-	parameter_names = list(df)
 
-	# Configuring data types
-
-	cols_to_transform = list(df.columns[df.dtypes == 'category' ])
-	for i, col in enumerate(cols_to_transform):
-		df[col] = df[col].astype('float64')
-
-	if 'AT_ST' in parameter_names:
-		df['AT_ST'] = df['AT_ST'] / np.timedelta64(1, 'h')
-
-	# Compute the phi coefficient
-
-	phi = np.zeros((df.shape[1],df.shape[1]))
-	for i in range(df.shape[1]):
-		for j in range(df.shape[1]):
-			phi[i][j]= matthews_corrcoef(df.values[:,i],df.values[:,j])
-
-	phi[np.diag_indices(df.shape[1])] = 0
-	phi[np.abs(phi)<0.3] = 0
-
-	phi_table = pd.DataFrame(phi, index=parameter_names, columns=parameter_names)
-
-	return phi_table
 
 
 #### READ CONFIGURATION FILE ##########
@@ -98,5 +70,4 @@ if not os.path.exists(to_save_path):
 vif = mulcolfunc(dataset_path)
 vif.to_csv(to_save_path+dataset_name+'_multicollinearity.csv',float_format= '%2.2f')
 
-#phi = phi_coef(dataset_path)
-#phi.to_csv(to_save_path+dataset_name+'_phitable.csv', sep='\t',float_format= '%2.2f' )
+
