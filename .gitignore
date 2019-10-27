@@ -104,5 +104,6 @@ venv.bak/
 .mypy_cache/
 
 # Custom files and folders
-catboost_info/
-data/
+code/catboost_info/
+code/data/
+code/modeling_results/

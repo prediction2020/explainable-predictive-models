@@ -3,7 +3,7 @@ import pandas as pd
 import pickle
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-from helper_functions import subsample
+from utils.helper_functions import subsample
 
 
 class ClinicalDataset:
@@ -12,13 +12,12 @@ class ClinicalDataset:
         self.load_data(path)
 
     def load_data(self,datapath):
-        self.df = pd.read_pickle(datapath)
-
-        self.cats = self.df.columns[self.df.dtypes=='category']
+        self.df = pd.read_pickle(datapath)     
         self.cols = list(self.df)
         self.label = list(self.df)[-1]
-
+        self.cats = self.df.columns[self.df.dtypes=='category']
         self.X, self.y = self.df.drop(self.label,axis=1), self.df[[self.label]]
+        self.cat_preds = self.X.columns[self.X.dtypes=='category']
 
     def preprocess(self):
     	# Convert all data types to float64 - this is needed in order to use the StandardScaler function of sklearn
@@ -29,7 +28,7 @@ class ClinicalDataset:
         self.num_data = list(set(self.cols) - set(self.cats))
         self.X.loc[:,self.num_data] = preprocessing.StandardScaler().fit_transform(self.X.loc[:,self.num_data])
 
-    def assign_training_test_splits(self, path, test_size=None, runs=None):
+    def assign_train_test_splits(self, path, test_size=None, runs=None):
         try:
             self.splits = pickle.load(open(path,'rb'))
             print('Loaded training and test splits from pre-existing splits.')
@@ -38,16 +37,19 @@ class ClinicalDataset:
             self.splits = []
             for i in range(runs):
                 # Creating the same test data split to use in all models
-                tmp_set = dict.fromkeys(['train_data','train_labels','test_data','test_labels'])
-                X_tr, X_te, y_tr, y_te = train_test_split(self.X, self.y, test_size = test_size,stratify=self.y, random_state = 42+i)
+                tmp_split = dict.fromkeys(['train_data','train_labels','test_data','test_labels'])
+                X_tr, X_te, y_tr, y_te = train_test_split(self.X, 
+                                                          self.y, 
+                                                          test_size = test_size,
+                                                          stratify=self.y)
 
                 # Save the splits to be used in all models
-                tmp_set['train_data'] = X_tr
-                tmp_set['train_labels'] = y_tr
-                tmp_set['test_data'] = X_te
-                tmp_set['test_labels'] = y_te
+                tmp_split['train_data'] = X_tr
+                tmp_split['train_labels'] = y_tr
+                tmp_split['test_data'] = X_te
+                tmp_split['test_labels'] = y_te
 
-                self.splits.append(tmp_set)
+                self.splits.append(tmp_split)
 
             pickle.dump(self.splits, open(path, 'wb'))
 
