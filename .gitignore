@@ -107,3 +107,4 @@ venv.bak/
 code/catboost_info/
 code/data/
 code/modeling_results/
+code/data_analysis/

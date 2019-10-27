@@ -34,7 +34,7 @@ yaml.add_constructor('!join',join)
 # Read the config file
 cfg = yaml.load(open('config.yml', 'r'), Loader= yaml.Loader)
 
-# Assign variables
+# Assign variables to use
 dataset_name = cfg['dataset']['name']
 dataset_path = cfg['dataset']['path']
 splits_path = cfg['dataset']['splits path']

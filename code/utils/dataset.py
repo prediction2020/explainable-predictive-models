@@ -15,7 +15,8 @@ class ClinicalDataset:
         self.df = pd.read_pickle(datapath)     
         self.cols = list(self.df)
         self.label = list(self.df)[-1]
-        self.cats = self.df.columns[self.df.dtypes=='category']
+        self.cat_data = self.df.columns[self.df.dtypes=='category']
+        self.num_data = list(set(self.cols) - set(self.cat_data))
         self.X, self.y = self.df.drop(self.label,axis=1), self.df[[self.label]]
         self.cat_preds = self.X.columns[self.X.dtypes=='category']
 
@@ -24,8 +25,7 @@ class ClinicalDataset:
         for i, col in enumerate(self.cols):
             self.df[col] = self.df[col].astype('float64')
 
-        # Center numeric data
-        self.num_data = list(set(self.cols) - set(self.cats))
+        # Center numeric data       
         self.X.loc[:,self.num_data] = preprocessing.StandardScaler().fit_transform(self.X.loc[:,self.num_data])
 
     def assign_train_test_splits(self, path, test_size=None, runs=None):

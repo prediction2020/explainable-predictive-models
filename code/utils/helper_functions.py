@@ -130,7 +130,7 @@ def plot_performance(scores, model_names,sub_type,path):
     perfs = list(scores.keys())
     model_count = len(model_names)
 
-    fig, ax = plt.subplots(1,len(perfs),sharey =True, sharex=True, figsize=(30,5))
+    fig, ax = plt.subplots(1,len(perfs),sharey =True, sharex=True, figsize=(len(perfs)*7,5),squeeze=False)
     plt.style.use('seaborn-notebook')
     for i, perf in enumerate(perfs):
         score = scores[perf]
@@ -139,16 +139,16 @@ def plot_performance(scores, model_names,sub_type,path):
         median_tr, iqr_tr = [np.median(score[m],axis=0)[0] for m in model_names], [iqr(score[m],axis=0)[0] for m in model_names]
         median_te, iqr_te = [np.median(score[m],axis=0)[1] for m in model_names] ,[iqr(score[m],axis=0)[1] for m in model_names]      
 
-        ax[i].errorbar(range(model_count),median_tr,yerr = iqr_tr,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4,label= 'training '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
-        ax[i].errorbar(range(model_count),median_te,yerr = iqr_te,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4, label= 'test '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
-        ax[i].legend(loc= 'lower left',fontsize=15)
-        ax[i].set_title(perf.replace('_',' '), size=20)
-        ax[i].set_ylim(0.3,1)
-        ax[i].tick_params(axis='both',labelsize=13)
+        ax[0,i].errorbar(range(model_count),median_tr,yerr = iqr_tr,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4,label= 'training '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
+        ax[0,i].errorbar(range(model_count),median_te,yerr = iqr_te,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4, label= 'test '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
+        ax[0,i].legend(loc= 'lower left',fontsize=15)
+        ax[0,i].set_title(perf.replace('_',' '), size=20)
+        ax[0,i].set_ylim(0.3,1)
+        ax[0,i].tick_params(axis='both',labelsize=13)
 
     model_names_ticks = [m.replace('Catboost', 'Tree Boosting').replace('ElasticNet','Elastic Net') for m in model_names]
 
-    ax[0].set_ylabel('Value', size=16)
+    ax[0,0].set_ylabel('Value', size=16)
     plt.xticks(range(model_count),model_names_ticks)
     plt.suptitle('Final Performance Scores',size=20,y=1.04)
     plt.tight_layout()
@@ -159,21 +159,20 @@ def plot_features_rating(values, sub_type, path):
     models = list(values.keys())
     sns.set(style = "white", rc={"xtick.labelsize": 10, "ytick.labelsize": 18})
     
-    fig,ax = plt.subplots(1,len(models),sharey=True,sharex = True,figsize=(16,5))
+    fig,ax = plt.subplots(1,len(models),sharey=True,sharex = True,figsize=(len(models)*3,5),squeeze=False)
     for i,mdl in enumerate(models):
         value = values[mdl].copy()
         value[:] = preprocessing.normalize(value)
-        sns.barplot( data= abs(value),orient= 'h',ci='sd',errwidth=0.9,estimator = np.mean,ax = ax[i])
+        sns.barplot( data= abs(value),orient= 'h',ci='sd',errwidth=0.9,estimator = np.mean,ax = ax[0,i])
         
         if mdl == 'Catboost':
-            ax[i].set_xlabel('|shap values|',size=16)
+            ax[0,i].set_xlabel('|shap values|',size=16)
         elif mdl == 'MLP':
-            ax[i].set_xlabel('|deep taylor values|',size=16)
+            ax[0,i].set_xlabel('|deep taylor values|',size=16)
         else:
-            ax[i].set_xlabel('|weights|',size=16)
-        ax[i].set_title(mdl.replace('Catboost','Tree Boosting').replace('Elasticnet', 'Elastic Net'),size=20)
+            ax[0,i].set_xlabel('|weights|',size=16)
+        ax[0,i].set_title(mdl.replace('Catboost','Tree Boosting').replace('Elasticnet', 'Elastic Net'),size=20)
     plt.suptitle('Clinical Features Importance Rating',size=20,y=1.02)
     
-    #plt.show()
-    fig.savefig(f'{path}/clinical_features_rating_{sub_type}_subsampling.png',bbox_inches='tight')#,transparent=True)
+    fig.savefig(f'{path}/clinical_features_rating_{sub_type}_subsampling.png',bbox_inches='tight')
     plt.close(fig)
