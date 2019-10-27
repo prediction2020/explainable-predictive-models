@@ -2,37 +2,28 @@ import numpy as np
 import pickle
 import time
 import os
-
 import pandas as pd
-import sys
-
-from sklearn.model_selection import GridSearchCV, ParameterGrid, StratifiedKFold
-from sklearn.linear_model import LogisticRegression, SGDClassifier
-from sklearn import preprocessing
-
 import catboost as cat
-
 import keras
 import tensorflow as tf
 os.environ["KERAS_BACKEND"] = 'tensorflow'
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from keras.callbacks import EarlyStopping
-from keras_helper import *
-
 from abc import abstractmethod
-
-
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, recall_score
+from sklearn.model_selection import GridSearchCV, ParameterGrid
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn import preprocessing
+from helper_funstions import calculate_performance_score
 
 class model:
-    def __init__(self,name,sets,fixed_params=None,tuning_params=None):
+    def __init__(self,name,dataset,fixed_params=None,tuning_params=None):
         self.name = name
-        self.sets = sets
-        self.X_tr = sets['train_data']
-        self.y_tr = sets['train_labels']
-        self.X_te = sets['test_data']
-        self.y_te = sets['test_labels']
+        self.X_tr = dataset['train_data']
+        self.y_tr = dataset['train_labels']
+        self.X_te = dataset['test_data']
+        self.y_te = dataset['test_labels']
 
         self.fixed_params = fixed_params
         self.tuning_params = tuning_params
@@ -57,18 +48,17 @@ class model:
     	return training_performance, test_performance
 
 
-#class GLM(model):
-#    def run(self,*args):
-#        self.best_model = LogisticRegression(**self.fixed_params)
-#        self.best_model.fit(self.X_tr,np.ravel(self.y_tr))
-
+class GLM(model):
+    def train(self):
+        self.best_model = LogisticRegression(**self.fixed_params)
+        self.best_model.fit(self.X_tr,np.ravel(self.y_tr))
 
 
 class Lasso(model):
-    def run_gridsearch(self,my_cv,cv_score):
+    def run_gridsearch(self,cv,cv_score):
         model = LogisticRegression(**self.fixed_params)
 
-        gsearch = GridSearchCV(estimator= model, cv= my_cv, param_grid=self.tuning_params, scoring=cv_score,iid=True,n_jobs=-1)
+        gsearch = GridSearchCV(estimator= model, cv= cv, param_grid=self.tuning_params, scoring=cv_score,iid=True,n_jobs=-1)
         gsearch.fit(self.X_tr.values.astype('float'), np.ravel(self.y_tr.values.astype('float')))
 
         self.best_tuning_params = gsearch.best_params_
@@ -81,11 +71,11 @@ class Lasso(model):
         self.best_model.fit(self.X_tr,np.ravel(self.y_tr))
 
 
-class Elasticnet(model):
-    def run_gridsearch(self,my_cv,cv_score):
+class ElasticNet(model):
+    def run_gridsearch(self,cv,cv_score):
         model = SGDClassifier(**self.fixed_params)
 
-        gsearch = GridSearchCV(estimator=model, cv=my_cv, param_grid=self.tuning_params, scoring=cv_score,iid=True,n_jobs=-1)
+        gsearch = GridSearchCV(estimator=model, cv=cv, param_grid=self.tuning_params, scoring=cv_score,iid=True,n_jobs=-1)
         gsearch.fit(self.X_tr.values.astype('float'), np.ravel(self.y_tr.values.astype('float')))
 
         self.best_tuning_params = gsearch.best_params_
@@ -99,7 +89,7 @@ class Elasticnet(model):
 
 
 class Catboost(model):
-    def run_gridsearch(self,my_cv,cv_score):
+    def run_gridsearch(self,cv,cv_score):
         cats = self.X_tr.columns[self.X_tr.dtypes=='category']
         params = self.fixed_params.copy()
 
@@ -108,7 +98,7 @@ class Catboost(model):
             params.update(tune)
 
             AUC_val = []
-            for train, val in my_cv.split(self.X_tr,self.y_tr):
+            for train, val in cv.split(self.X_tr,self.y_tr):
                 X_train, y_train = self.X_tr.iloc[train], self.y_tr.iloc[train]
                 X_val, y_val = self.X_tr.iloc[val], self.y_tr.iloc[val]
                 train_pool = cat.Pool(X_train, y_train, cat_features= [list(self.X_tr).index(cats[i]) for i in range(len(cats))])
@@ -139,7 +129,7 @@ class Catboost(model):
 
 
 class MLP(model):
-    def run_gridsearch(self,my_cv,cv_score):
+    def run_gridsearch(self,cv,cv_score):
         # Setting fixed parameters
         params = self.fixed_params.copy()
 
@@ -153,7 +143,7 @@ class MLP(model):
             params.update(tune)
 
             AUC_val = []
-            for train, val in my_cv.split(self.X_tr,self.y_tr):
+            for train, val in cv.split(self.X_tr,self.y_tr):
                 X_train, y_train = self.X_tr.iloc[train], self.y_tr.iloc[train]
                 X_val, y_val = self.X_tr.iloc[val], self.y_tr.iloc[val]
 
@@ -170,9 +160,7 @@ class MLP(model):
                 history = model.fit(X_train, y_train, callbacks= callbacks, validation_data = (X_val, y_val), epochs = params['epochs'], batch_size = params['batch_size'], verbose = 0)
 
                 validation_AUC = calculate_performance_score(data = X_val, labels = np.array(y_val.astype('float')), model = model, model_name= self.name,score_name = cv_score)
-                probs_val = model.predict_proba(X_val).T[0]
-                AUC = roc_auc_score(y_val, probs_val)
-                AUC_val.append(AUC)
+                AUC_val.append(validation_AUC)
 
             AUC_val = np.mean(AUC_val)
 

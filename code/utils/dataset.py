@@ -1,17 +1,18 @@
 import numpy as np
 import pandas as pd
+import pickle
 from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-from subsampling import *
+from helper_functions import subsample
 
 
-class clinical_dataset:
-    def __init__(self, name):
+class ClinicalDataset:
+    def __init__(self, name, path):
         self.name = name
-        self.load_data()
+        self.load_data(path)
 
-    def load_data(self,datasource):
-        self.df = pd.read_pickle(datasource)
+    def load_data(self,datapath):
+        self.df = pd.read_pickle(datapath)
 
         self.cats = self.df.columns[self.df.dtypes=='category']
         self.cols = list(self.df)
@@ -28,21 +29,28 @@ class clinical_dataset:
         self.num_data = list(set(self.cols) - set(self.cats))
         self.X.loc[:,self.num_data] = preprocessing.StandardScaler().fit_transform(self.X.loc[:,self.num_data])
 
-    def assign_training_test_sets(self, test_size=None, runs=None):
-        self.sets = []
-        for i in range(runs):
-            # Creating the same test data split to use in all models
-            tmp_set = dict.fromkeys(['train_data','train_labels','test_data','test_labels'])
-            X_tr, X_te, y_tr, y_te = train_test_split(self.X, self.y, test_size = test_size,stratify=self.y, random_state = 42+i)
+    def assign_training_test_splits(self, path, test_size=None, runs=None):
+        try:
+            self.splits = pickle.load(open(path,'rb'))
+            print('Loaded training and test splits from pre-existing splits.')
 
-            # Save the sets to be used in all models
-            tmp_set['train_data'] = X_tr
-            tmp_set['train_labels'] = y_tr
-            tmp_set['test_data'] = X_te
-            tmp_set['test_labels'] = y_te
+        except IOError:
+            self.splits = []
+            for i in range(runs):
+                # Creating the same test data split to use in all models
+                tmp_set = dict.fromkeys(['train_data','train_labels','test_data','test_labels'])
+                X_tr, X_te, y_tr, y_te = train_test_split(self.X, self.y, test_size = test_size,stratify=self.y, random_state = 42+i)
 
-            self.sets.append(tmp_set)
+                # Save the splits to be used in all models
+                tmp_set['train_data'] = X_tr
+                tmp_set['train_labels'] = y_tr
+                tmp_set['test_data'] = X_te
+                tmp_set['test_labels'] = y_te
+
+                self.splits.append(tmp_set)
+
+            pickle.dump(self.splits, open(path, 'wb'))
 
     def subsample_training_set(self,number_of_runs,subsampling_type):
         for i in range(number_of_runs):
-            self.sets[i]['train_data'], self.sets[i]['train_labels'] = subsample(self.sets[i]['train_data'], self.sets[i]['train_labels'],subsampling_type)
+            self.splits[i]['train_data'], self.splits[i]['train_labels'] = subsample(self.splits[i]['train_data'], self.splits[i]['train_labels'],subsampling_type)

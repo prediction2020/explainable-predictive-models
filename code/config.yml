@@ -8,7 +8,7 @@ dataset:
   name : &dataname 1kplus
   main path : &maindatapath data/
   path : !join [*maindatapath, *dataname, _data_and_labels_outcome_pred.pkl]
-  splits path : !join [*maindatapath, *dataname, _clinical_train_test_sets.pkl]
+  splits path : !join [*maindatapath, *dataname, _training_test_sets.pkl]
 
 features: 
   AD_NIH : NIHSS
@@ -24,17 +24,17 @@ features:
 models to use :
   - GLM
   - Lasso
-  - Elasticnet
+  - ElasticNet
   - Catboost
   - MLP
 
 test size : 0.2
 
-number of train-test splits : 50
+number of training-test splits : 50
 
-cv folds : 10
+cross-validation folds : 10
 
-cv score : roc_auc
+cross-validation score : roc_auc
 
 final performance measures :
   - AUC
@@ -83,12 +83,12 @@ tuning hyperparameters :
 
 # 4. Saving options ------------------------------------------------------------
 
-main saving path : &mainsavepath modeling_results/
-models path : !join [*mainsavepath, *dataname, /models]
-parameters path : !join [*mainsavepath, *dataname, /parameters]
-weights path : !join [*mainsavepath, *dataname, /weights]
-scores path : !join [*mainsavepath, *dataname, /performance_scores]
-figures path : !join [*mainsavepath, *dataname, /figures]
+main save path : &mainsavepath modeling_results/
+models folder path : !join [*mainsavepath, *dataname, /models]
+parameters folder path : !join [*mainsavepath, *dataname, /parameters]
+weights folder path : !join [*mainsavepath, *dataname, /weights]
+scores folder path : !join [*mainsavepath, *dataname, /performance_scores]
+figures folder path : !join [*mainsavepath, *dataname, /figures]
 
 # ------------------------------------------------------------------------------
 # DEFAULT OPTIONS
