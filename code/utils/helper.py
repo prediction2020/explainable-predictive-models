@@ -1,12 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pickle
-import json
 
 import pandas as pd
-import sys
-import pandas.core.indexes
-sys.modules['pandas.indexes'] = pandas.core.indexes
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, recall_score
@@ -44,37 +39,7 @@ class dataset:
 
         return self.sets
 
-    def assign_train_val_test_sets(self,path,test_size=None,val_size=None,runs=None):
-        try:
-            self.sets = pickle.load(open(path,'rb'))
-            print('Loaded pre-existing %s training, validation and test sets'%(self.datatype))
-
-        except IOError:
-            # Random state variable assures the split is the same every time the function is called
-            self.sets = []
-            #self.sets = dict.fromkeys(['train_data','train_labels','val_data','val_labels','test_data','test_labels'])
-            for i in range(runs):
-                # Creating the same test data split to use in all models
-                tmp_set = dict.fromkeys(['train_data','train_labels','val_data','val_labels','test_data','test_labels'])
-
-                self.X_train,self.X_te,self.y_train,self.y_te = train_test_split(self.X, self.y, test_size = test_size,stratify=self.y, random_state = 42+i)
-                self.X_tr, self.X_val , self.y_tr, self.y_val = train_test_split(self.X_train, self.y_train, test_size = val_size, stratify= self.y_train, random_state=21+i)
-
-                tmp_set['train_data'] = self.X_tr
-                tmp_set['train_labels'] = self.y_tr
-                tmp_set['val_data'] = self.X_val
-                tmp_set['val_labels'] = self.y_val
-                tmp_set['test_data'] = self.X_te
-                tmp_set['test_labels'] = self.y_te
-
-                self.sets.append(tmp_set)
-
-            folder_to_save = path.split('/')[0]
-            pickle.dump(self.sets, open(folder_to_save+'/'+self.name+'_'+self.datatype+'_train_val_test_set.pkl', 'wb'))
-
-        return self.sets
-
-    def subsample_training_sets(self,number_of_runs,sub_type):
+    def subsample_training_sets(self,number_of_runs,subsampling_type):
         sets_to_use = []
         for i in range(number_of_runs):
             tmp_set = dict.fromkeys(['train_data','train_labels','test_data','test_labels'])
