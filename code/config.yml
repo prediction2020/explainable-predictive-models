@@ -125,10 +125,13 @@ fixed hyperparameters:
     od_wait : 40
 
   MLP :
+    monitor : val_loss
+    mode : min
     epochs : 50
     iter_patience : 2
-    hidden_activation : 'relu'
-    out_activation : 'sigmoid'
-    loss_func : 'binary_crossentropy'
-    optimizer : 'adam'
-    weight_init : 'uniform'
+    min_delta : 0.005
+    hidden_activation : relu
+    out_activation : sigmoid
+    loss_func : binary_crossentropy
+    optimizer : adam
+    weight_init : uniform
