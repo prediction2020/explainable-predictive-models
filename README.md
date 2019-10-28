@@ -86,11 +86,11 @@ A tree-boosting model is implemented using the Catboost package for python. Info
 ### Clinical parameters rating
 Three different explainability methods tailored to the different ML algorithms were used to calculate importance values for the clinical predictors used in the scope of this project. 
 
-Methods:
 1. GLM, Lasso and Elastic Net: Weights assigned to input features (predictors) in the trained GLM, Lasso and Elasticnet models were used as feature impoartance values.
-2. Tree Boosting (Catboost): Shapley values were used for systematically rating the importance (gain) of each of the input features (predictors) in the trained Catboost model.
-3. MLP: A deep Taylor decomposition method was used to find salient features in the trained MLP model. The deep taylor values were calculated using the INNvestigate package.
+2. Tree Boosting (Catboost): Shapley values were used for systematically rating the importance (gain) of each of the input features (predictors) in the trained Catboost model. Shapley values were obtained using the Python package [SHAP](https://github.com/slundberg/shap)
+3. MLP: A gradient based algorithm called deep Taylor decomposition was used to find salient features in the trained MLP model. The gradients were obtained using the Python package [INNvestigate](https://github.com/albermax/innvestigate).
 
+The absolute values of the calculated feature importance scores were scaled to unit norm in order to provide comparable feature rating across models. Then, for each feature the mean and standard deviation over the splits were calculated.
 
 ## Results:
 
@@ -117,8 +117,11 @@ The table below presents the performance results calculated as AUC scores over 5
 
 ![](images/clinical_predictor_ratings_all_models_random_subsampling.png)
 
+## Manual
+Manual to this framework can be found [here](manual.md).
 
-
+## License
+This project is licensed under the [MIT license](LICENSE).
 
 
 
