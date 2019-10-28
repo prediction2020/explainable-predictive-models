@@ -31,7 +31,7 @@ defined as a model class [here](code/utils/models.py) and has to be listed in th
 - number of splits : Number of training-test splits, i.e shuffles
 - final performance measures: List of measures to calculate final performance (e.g AUC). Any measure to be used must 
 be defined in the calc_perf_score function [here](code/utils/helper_functions.py). 
-- subsampling to use : Type of subsampling to use on the traning set. Any type of subsampling to be used must be defined in 
+- subsampling to use : Subsampling method to use on the traning set. Any subsampling method to be used must be defined in 
 the subsample fuction [here](code/utils/helper_functions.py). For no subsampling must be set to 'none'.
 - fixed hyperparameters : Hyperparameters that won't be included in model tuning. All fixed hyperparameters must be set
 to a single value.
