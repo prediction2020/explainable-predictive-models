@@ -7,13 +7,13 @@ This repository contains the implementation and evaluation of linear (GLM, Lasso
 
 __Input:__ Clinical predictors (features) (7)
 
-AD_NIH: NIHSS at admission
-AT_LY: thrombolysis
-CH: history of cardiac diseases
-DG_SEX: gender
-RF_DM: diabetes
-RF_HC: hypercholesterolemia
-DG_AG: age
+    AD_NIH: NIHSS at admission
+    AT_LY: thrombolysis
+    CH: history of cardiac diseases
+    DG_SEX: gender
+    RF_DM: diabetes
+    RF_HC: hypercholesterolemia
+    DG_AG: age
 
 __Output:__ 3 months post-stroke mRS score (good (mrs<=2) : 226 patients , bad (mrs>=3) : 88 patients)
 
@@ -27,13 +27,13 @@ __Exclusion Criteria:__
 
 The table below presents the clinical characteristics of the 1000plus dataset.
 
-| Clinical Information             | Value       | Abbreviation | Clinical Information           | Value    | Abbreviation | 
-|----------------------------------|-------------|--------------|--------------------------------|----------|--------------| 
-| Median age (IQR)                 | 72.0 (15.0) | DG_AG        | Cardiac history (yes/ no)      | 84/ 230  | CH           | 
-| Median Initial NIHSS (IQR)       | 3 (5)       | AD_NIH       | Diabetes (yes/ no)             | 79/ 235  | RF_DM        | 
-| Thrombolysis (yes/ no)           | 74/ 240     | AT_LY        | Hypercholesterolemia (yes/ no) | 182/ 132 | RF_HC        | 
-| Females/ males                   | 196/ 118    | DG_SEX       | 								 |          |              |
- 
+| Clinical Information             | Value       | Clinical Information           | Value    | 
+|----------------------------------|-------------|--------------------------------|----------|
+| Median age (IQR)                 | 72.0 (15.0) | Cardiac history (yes/ no)      | 84/ 230  | 
+| Median Initial NIHSS (IQR)       | 3 (5)       | Diabetes (yes/ no)             | 79/ 235  | 
+| Thrombolysis (yes/ no)           | 74/ 240     | Hypercholesterolemia (yes/ no) | 182/ 132 |  
+| Females/ males                   | 196/ 118    | 								                |          |
+
 The figures below show the distribution of continuous and categorical predictors in the 1000plus dataset.
 
 ![](images/1kplus_hist_of_numerical_data.png)
