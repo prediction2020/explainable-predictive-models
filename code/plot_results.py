@@ -7,9 +7,6 @@ import itertools
 from scipy.stats import iqr
 
 import pandas as pd
-import sys
-import pandas.core.indexes
-sys.modules['pandas.indexes'] = pandas.core.indexes
 
 from utils.helper_functions import plot_performance, plot_features_rating
 

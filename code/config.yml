@@ -14,7 +14,7 @@ features:
   AD_NIH : NIHSS
   AT_LY : thrombolysis treatment
   DG_SEX : gender
-  RF_D : diabetes
+  RF_DM : diabetes
   RF_HC : hypercholesterol
   DG_AG : age 
   CH : cardiac history
@@ -30,7 +30,7 @@ models to use :
 
 test size : 0.2
 
-number of splits :  3
+number of splits :  40
 
 final performance measures :
   - AUC

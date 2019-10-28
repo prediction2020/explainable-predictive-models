@@ -94,7 +94,7 @@ def calc_deep_taylor_values(model):
 
     # Set last layer activation to linear. If this swapping is not done, the 
     # results might be suboptimal
-    Model.best_model.layers[-1].activation = activations.linear
+    model.best_model.layers[-1].activation = activations.linear
     stripped_model = utils.apply_modifications(model.best_model)
 
     # Calculate class weights
@@ -105,7 +105,7 @@ def calc_deep_taylor_values(model):
     last_layer_idx = utils.find_layer_idx(model.best_model, 'dense_2')
 
     # Calculate global gradients of all patients (deep taylor)
-    seed_input = Model.X_tr.values
+    seed_input = model.X_tr.values
     # The deep taylor is bounded to a range which should be defined based on the input range:
     input_range = [min(seed_input.flatten()),max(seed_input.flatten())] 
     gradient_analyzer = innvestigate.create_analyzer("deep_taylor.bounded",        # analysis method identifier

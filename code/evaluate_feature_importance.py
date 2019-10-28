@@ -1,9 +1,7 @@
 import numpy as np
 import yaml
 import os
-import keras
 import pandas as pd 
-
 from utils.models import *
 from utils.dataset import *
 from utils.helper_functions import calc_shap_values, calc_deep_taylor_values
@@ -92,7 +90,7 @@ for subs in subsampling_types:
 		if not os.path.isfile(path_to_imp_values):
 			# Create temporary variable to store the calculated importance values from 
 			# each split.
-			tmp_values = np.zeros((number_of_splits,len(Data.cols)-1))
+			tmp_values = np.zeros((number_of_splits,len(data.cols)-1))
 
 			# Iterate over splits.
 			for i in range(number_of_splits):
@@ -114,16 +112,16 @@ for subs in subsampling_types:
 
 				# Calculate shap values for the non-linear Catboost classifier.
 				elif mdl == 'Catboost':
-					shap_values = calc_shap_values(dataset= data, model = model)
+					shap_values = calc_shap_values(dataset = data, model = model)
 					shaps = ["{:.5f}".format(shap) for shap in shap_values]
 					tmp_values[i,:] = shaps
 
 				elif mdl == 'MLP':
-					dt_values = calc_deep_taylor_values(dataset = Data, model = Model)
+					dt_values = calc_deep_taylor_values(model = model)
 					tmp_values[i,:] = dt_values
 
 
-			df_values = pd.DataFrame(tmp_values, columns= list(Data.X))
+			df_values = pd.DataFrame(tmp_values, columns= list(data.X))
 			df_values.to_csv(path_to_imp_values)
 
 			print(f'Saved {mdl} feature importance values with {subs} subsampling.')

@@ -143,9 +143,6 @@ for subs in subsampling_types:
 				# Save best model on the current split.
 				model.save_model(path_to_model)
 				
-				# Print progress 
-				if i>0 and i%10 == 0:
-					print(str(i*2)+'%s of the process is done.'%('%'))
 
 				# Save best tuning hyperparameters (except GLM)
 				if mdl != 'GLM':
