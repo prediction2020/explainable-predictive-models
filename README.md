@@ -19,10 +19,10 @@ __Output:__ 3 months post-stroke mRS score (good (mrs<=2) : 226 patients , bad (
 
 __Exclusion Criteria:__
 
-1. Patients with no mRS information were excluded.
-2. Patients with infratentorial stroke and no visible DWI lesions were excluded.
-3. Clinical predictors with more than 5% missing values were excluded.
-4. Categorical clinical predictors with a yes/no ratio larger than 1/4 were excluded, in order to prevent category imbalance.
+* Patients with no mRS information were excluded.
+* Patients with infratentorial stroke and no visible DWI lesions were excluded.
+* Clinical predictors with more than 5% missing values were excluded.
+* Categorical clinical predictors with a yes/no ratio larger than 1/4 were excluded, in order to prevent category imbalance.
                                  
 
 The table below presents the clinical characteristics of the 1000plus dataset.
@@ -56,7 +56,7 @@ The Variance Inflation Factor (VIF) was calculated for each of the clinical pred
 |  VIF            | 1.28    | 1.33 | 1.91   | 1.36  | 1.74  | 1.15  | 1.50  |
 
 
-### Cross-validation Design:
+### Cross-validation Design
 * The data was split into training and test sets with a 4/1 ratio. Same training and test sets were used in all models to achieve comparable results. 
 * The models were tuned, i.e best hyperparameters were selected, using 10-folds cross-validation with gridsearch. Same folds were used for all models to achieve comparable results.
 * In order to account for data variability the above process was repeated 50 times; resulting in 50 splits tuned separately for each model.
@@ -83,7 +83,7 @@ A tree-boosting model is implemented using the Catboost package for python. Info
 
 
 
-## Clinical parameters rating
+### Clinical parameters rating
 Three different explainability methods tailored to the different ML algorithms were used to calculate importance values for the clinical predictors used in the scope of this project. 
 
 Methods:
