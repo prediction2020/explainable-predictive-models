@@ -109,13 +109,13 @@ The table below presents the performance results calculated as AUC scores over 5
 
 The figure below illustrates the performance of the different models evaluated on the test (blue) and training (orange) sets. The markers show showing the median AUC over 50 splits and the error bars represent  interquartile range (IQR).
 
-![](images/AUC_scores_random_subsampling.tif)
+![](images/AUC_scores_random_subsampling.png)
 
 ### Clinical Predictors Importance Ratings
 
 The figure below illustrates the features rating derived from the model-tailored interpretability methods. The bar heights represent means and error bars represent standard deviation over 50 splits.
 
-![](images/clinical_predictor_ratings_all_models_random_subsampling.tif)
+![](images/clinical_predictor_ratings_all_models_random_subsampling.png)
 
 ## Manual
 Manual to this framework can be found [here](manual.md).
