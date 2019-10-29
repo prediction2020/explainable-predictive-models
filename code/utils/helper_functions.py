@@ -1,3 +1,11 @@
+"""
+File name: helper_functions.py
+Author: Esra Zihni
+Date created: 
+
+This file contains helper functions for other scripts.
+"""
+
 import numpy as np
 import pandas as pd
 import catboost as cat
@@ -15,7 +23,16 @@ import innvestigate.utils.keras.graph as inkgraph
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, recall_score
 
 
-def subsample(X,y,subsampling_type):
+def subsample(X,y,subsampling_type:str):
+    """
+    If subsampling type is defined as 'random', randomly sub-samples the given 
+    data to yield equal number of label classes. Otherwise if subsampling type 
+    is defined as 'none', returns original data. 
+
+    :param X: Data input variables
+    :param y: Data labels
+    :param subsampling_type: Subsampling method to be used.
+    """
     df = pd.concat([X,y],axis=1)
     label = list(df)[-1]
 
@@ -31,7 +48,7 @@ def subsample(X,y,subsampling_type):
 
     return X_new, y_new
 
-def predict_probability(data,model,model_name):
+def predict_probability(data,model,model_name:str):
         if model_name == 'MLP':
             output_activation = model.get_config()['layers'][-1]['config']['activation']
             if output_activation == 'softmax':
@@ -43,7 +60,7 @@ def predict_probability(data,model,model_name):
 
         return probs
 
-def predict_class(data,model,model_name):
+def predict_class(data,model,model_name:str):
     preds = model.predict(data).astype('float64')
 
     if model_name == 'MLP':
@@ -56,7 +73,7 @@ def predict_class(data,model,model_name):
 
     return preds
 
-def calc_perf_score(data,labels,model,model_name, score_name):
+def calc_perf_score(data,labels,model,model_name:str, score_name:str):
     if isinstance(labels, pd.DataFrame):
         labels.iloc[:,0] = labels.iloc[:,0].astype('float64')
 
@@ -83,6 +100,8 @@ def calc_shap_values(dataset,model):
     shap_values = explainer.shap_values(cat.Pool(model.X_tr,
                                                  model.y_tr, 
                                                  cat_features = cat_features))
+
+    #Calculate average over samples (patients)
     shap_values_mean_over_samples = np.mean(shap_values,axis=0)
 
     return shap_values_mean_over_samples
@@ -101,23 +120,24 @@ def calc_deep_taylor_values(model):
     train_input_weights = train_probs
     train_input_weights[np.where(model.y_tr == 0)] = 1-train_input_weights[np.where(model.y_tr == 0)]
 
+    # Get last layer index
     class_idx = 0 # if the activation of last layer was sigmoid
     last_layer_idx = utils.find_layer_idx(model.best_model, 'dense_2')
 
-    # Calculate global gradients of all patients (deep taylor)
+    # Get the input the model was trained on
     seed_input = model.X_tr.values
     # The deep taylor is bounded to a range which should be defined based on the input range:
     input_range = [min(seed_input.flatten()),max(seed_input.flatten())] 
+
+    # Calculate global gradients of all patients (deep taylor)
     gradient_analyzer = innvestigate.create_analyzer("deep_taylor.bounded",        # analysis method identifier
                                                     stripped_model, # model without softmax output
                                                     low = input_range[0],
                                                     high =input_range[1])  
 
     # Some analyzers require training. You will get a warning message for the redundently fitted analyzer, you can ignore it
-    gradient_analyzer.fit(seed_input, batch_size=16, verbose=1)
+    # gradient_analyzer.fit(seed_input, batch_size=16, verbose=1)
     analysis = gradient_analyzer.analyze(seed_input)
-    # Calculate simple average:
-    avg_analysis = np.expand_dims(np.mean(analysis,axis=0),axis = 0)
 
     # Calculate score based average
     t_analysis = np.transpose(analysis,(1,0))
@@ -130,49 +150,66 @@ def plot_performance(scores, model_names,sub_type,path):
     perfs = list(scores.keys())
     model_count = len(model_names)
 
-    fig, ax = plt.subplots(1,len(perfs),sharey =True, sharex=True, figsize=(len(perfs)*7,5),squeeze=False)
+    fig, ax = plt.subplots(1,len(perfs),sharey =False, sharex=True, figsize=(len(perfs)*7,5),squeeze=False)
     plt.style.use('seaborn-notebook')
     for i, perf in enumerate(perfs):
         score = scores[perf]
-        mean_tr, std_tr = [score[m].mean(axis=0)[0] for m in model_names], [score[m].std(axis=0)[0] for m in model_names]
-        mean_te, std_te = [score[m].mean(axis=0)[1] for m in model_names], [score[m].std(axis=0)[1] for m in model_names]
-        median_tr, iqr_tr = [np.median(score[m],axis=0)[0] for m in model_names], [iqr(score[m],axis=0)[0] for m in model_names]
-        median_te, iqr_te = [np.median(score[m],axis=0)[1] for m in model_names] ,[iqr(score[m],axis=0)[1] for m in model_names]      
+        median_tr = [np.median(score[m],axis=0)[0] for m in model_names]
+        iqr_tr = [iqr(score[m],axis=0)[0] for m in model_names]
+        median_te = [np.median(score[m],axis=0)[1] for m in model_names] 
+        iqr_te = [iqr(score[m],axis=0)[1] for m in model_names]      
 
-        ax[0,i].errorbar(range(model_count),median_tr,yerr = iqr_tr,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4,label= 'training '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
-        ax[0,i].errorbar(range(model_count),median_te,yerr = iqr_te,marker='o',markersize='12',ls='None',alpha=0.6,capsize=4, label= 'test '+perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
-        ax[0,i].legend(loc= 'lower left',fontsize=15)
-        ax[0,i].set_title(perf.replace('_',' '), size=20)
-        ax[0,i].set_ylim(0.3,1)
-        ax[0,i].tick_params(axis='both',labelsize=13)
+        ax[0,i].errorbar(range(model_count),
+                         median_tr,
+                         yerr = iqr_tr,
+                         marker='o',
+                         markersize='12',
+                         ls='None',
+                         alpha=0.7,
+                         label= 'training '+ perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
+        ax[0,i].errorbar(range(model_count),
+                         median_te,
+                         yerr = iqr_te,
+                         marker='o',
+                         markersize='12',
+                         ls='None',
+                         alpha=0.7, 
+                         label= 'test '+ perf.replace('average','avg').replace('_', ' ').replace('accuracy','acc'))
+        ax[0,i].legend(loc= 'lower left')
+        ax[0,i].set_title(perf.replace('_',' '), size=11)
+        ax[0,i].tick_params(axis='both',labelsize=10)
+        if perf== 'AUC':
+            ax[0,i].set_ylim(0.5,1)
+        else:
+            ax[0,i].set_ylim(0.3,1)
 
     model_names_ticks = [m.replace('Catboost', 'Tree Boosting').replace('ElasticNet','Elastic Net') for m in model_names]
 
     ax[0,0].set_ylabel('Value', size=16)
     plt.xticks(range(model_count),model_names_ticks)
-    plt.suptitle('Final Performance Scores',size=20,y=1.04)
+    plt.suptitle('Final Performance Scores',size=12,y=1.04)
     plt.tight_layout()
-    fig.savefig(f'{path}/performance_scores_{sub_type}_subsampling.png',bbox_inches='tight')
+    fig.savefig(f'{path}/performance_scores_{sub_type}_subsampling.png',bbox_inches='tight',dpi=300)
     plt.close(fig)
 
 def plot_features_rating(values, sub_type, path):
     models = list(values.keys())
-    sns.set(style = "white", rc={"xtick.labelsize": 10, "ytick.labelsize": 18})
-    
-    fig,ax = plt.subplots(1,len(models),sharey=True,sharex = True,figsize=(len(models)*3,5),squeeze=False)
+    sns.set(style = "white", rc={"xtick.labelsize": 8, "ytick.labelsize": 10})
+
+    fig,ax = plt.subplots(1,len(models),sharey=True,sharex = True,figsize=(1.5*len(models),3),squeeze=False)
     for i,mdl in enumerate(models):
         value = values[mdl].copy()
         value[:] = preprocessing.normalize(value)
         sns.barplot( data= abs(value),orient= 'h',ci='sd',errwidth=0.9,estimator = np.mean,ax = ax[0,i])
-        
+
         if mdl == 'Catboost':
-            ax[0,i].set_xlabel('|shap values|',size=16)
+            ax[0,i].set_xlabel('|shap values|',size=9)
         elif mdl == 'MLP':
-            ax[0,i].set_xlabel('|deep taylor values|',size=16)
+            ax[0,i].set_xlabel('|deep taylor values|',size=9)
         else:
-            ax[0,i].set_xlabel('|weights|',size=16)
-        ax[0,i].set_title(mdl.replace('Catboost','Tree Boosting').replace('Elasticnet', 'Elastic Net'),size=20)
-    plt.suptitle('Clinical Features Importance Rating',size=20,y=1.02)
-    
-    fig.savefig(f'{path}/clinical_features_rating_{sub_type}_subsampling.png',bbox_inches='tight')
+            ax[0,i].set_xlabel('|weights|',size=9)
+        ax[0,i].set_title(mdl.replace('Catboost','Tree Boosting').replace('Elasticnet', 'Elastic Net'),size=10)
+    plt.suptitle('Clinical Features Importance Rating',size=12,y=1.02)
+
+    fig.savefig(f'{path}/clinical_features_rating_{sub_type}_subsampling.png',bbox_inches='tight',dpi=300)
     plt.close(fig)

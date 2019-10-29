@@ -35,9 +35,9 @@ yaml.add_constructor('!join',join)
 cfg = yaml.load(open('config.yml', 'r'), Loader= yaml.Loader)
 
 # Assign variables to use
-dataset_name = cfg['dataset']['name']
-dataset_path = cfg['dataset']['path']
-splits_path = cfg['dataset']['splits path']
+dataset_name = cfg['dataset name']
+dataset_path = cfg['data path']
+splits_path = cfg['splits path']
 number_of_splits = cfg['number of splits']
 models_to_use = cfg['models to use']
 subsampling_types = cfg['subsampling to use']
@@ -56,7 +56,7 @@ data = ClinicalDataset(name = dataset_name, path = dataset_path)
 
 # Load the training-test splits as a class instance variable using the 
 # assign_train_test_sets function with only the path to the splits file
-data.assign_train_test_splits(splits_path)
+data.assign_train_test_splits(path = splits_path)
 
 print('Number of patients in dataset: '+ str(len(data.X)))
 
@@ -71,7 +71,7 @@ if not os.path.exists(scores_folder):
 
 # Iterate over subsampling types
 for subs in subsampling_types:
-	data.subsample_training_set(number_of_splits,subs)
+	data.subsample_training_set(number_of_splits = number_of_splits, subsampling_type = subs)
 
 	# Iterate over models.
 	for mdl in models_to_use:
@@ -98,7 +98,7 @@ for subs in subsampling_types:
 									  dataset = data.splits[i],
 									  fixed_params = fixed_parameters)
 
-					model.load_model(path_to_model)
+					model.load_model(path = path_to_model)
 					
 					# Calculate the performance score on the current training and test
 					# data.

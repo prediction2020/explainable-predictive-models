@@ -23,7 +23,7 @@ cfg = yaml.load(open('config.yml', 'r'),Loader=yaml.Loader)
 
 
 # Assign variables to use
-dataset_name = cfg['dataset']['name']
+dataset_name = cfg['dataset name']
 models_to_use = cfg['models to use']
 subsampling_types = cfg['subsampling to use']
 performance_measures = cfg['final performance measures']

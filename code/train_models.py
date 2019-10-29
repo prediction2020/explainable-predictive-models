@@ -37,9 +37,9 @@ yaml.add_constructor('!join',join)
 cfg = yaml.load(open('config.yml', 'r'))
 
 # Assign variables
-dataset_name = cfg['dataset']['name']
-dataset_path = cfg['dataset']['path']
-splits_path = cfg['dataset']['splits path']
+dataset_name = cfg['dataset name']
+dataset_path = cfg['data path']
+splits_path = cfg['splits path']
 number_of_splits = cfg['number of splits']
 models_to_train = cfg['models to use']
 subsampling_types = cfg['subsampling to use']
@@ -61,7 +61,7 @@ data.preprocess()
 # For the initial assignment of training-test sets you have to specify the test set size, 
 # the required number of splits and the path to save the created splits.
 #
-data.assign_train_test_splits(splits_path, test_size, number_of_splits)
+data.assign_train_test_splits(path = splits_path, test_size = test_size, splits = number_of_splits)
 
 # If the splits have already been created and saved you can just load them as a class
 # instance variable using the assign_train_test_sets function with only the path to the 
@@ -85,7 +85,7 @@ if not os.path.exists(params_folder):
 	os.makedirs(params_folder)
 
 # Assign the strategy to choose folds during cross-validation
-my_cv = StratifiedKFold(cv_fold_count)
+my_cv = StratifiedKFold(cv_fold_count, random_state=21)
 
 start = time.time()
 
@@ -94,7 +94,7 @@ for subs in subsampling_types:
 
 	# Subsample the training data given the subsampling type. In order to provide 
 	# comparable results, the seed was fixed for random sampling.
-	data.subsample_training_set(number_of_splits,subs)
+	data.subsample_training_set(number_of_splits = number_of_splits,subsampling_type = subs)
 
 	# Iterate over model classes
 	for mdl in models_to_train:
@@ -118,13 +118,12 @@ for subs in subsampling_types:
 							  tuning_params = tune_params)
 
 			# Check if the model file path already exists.			
-			try:
-				model.load_model(path_to_model)
-				print(f'Loaded pre-esxisting {mdl} model with {subs} subsampling trained on split {i+1}.')
+			if os.path.isfile(path_to_model):
+				print(f'{mdl} model with {subs} subsampling trained on split {i+1} already exists.')
 
 
 			# If the model file path doesn't exist:
-			except:
+			else:
 				# 1. If'use gridsearch' option is set to True; run grid search to 
 				# find the best hyperparameters, train model on those hyperparameters
 				# (except for GLM, which doesn't have any tunable hyperparameters).

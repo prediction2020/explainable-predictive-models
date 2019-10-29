@@ -34,9 +34,9 @@ yaml.add_constructor('!join',join)
 cfg = yaml.load(open('config.yml', 'r'), Loader= yaml.Loader)
 
 # Assign variables
-dataset_name = cfg['dataset']['name']
-dataset_path = cfg['dataset']['path']
-splits_path = cfg['dataset']['splits path']
+dataset_name = cfg['dataset name']
+dataset_path = cfg['data path']
+splits_path = cfg['splits path']
 number_of_splits = cfg['number of splits']
 models_to_use = cfg['models to use']
 subsampling_types = cfg['subsampling to use']

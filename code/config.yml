@@ -1,14 +1,24 @@
 # -----------------------------------------------------------------------------------
-# USER DEFINED OPTIONS
+# SET PATH VARIABLES
+# -----------------------------------------------------------------------------------
+
+
+data path : data/1kplus_data_and_labels_outcome_pred.pkl
+splits path : data/1kplus_training_test_sets.pkl
+
+dataset name : &dataname 1kplus
+main results folder : &mainsavepath modeling_results/
+models folder path : !join [*mainsavepath, *dataname, /models]
+parameters folder path : !join [*mainsavepath, *dataname, /parameters]
+importance folder path : !join [*mainsavepath, *dataname, /feature_importance_values]
+scores folder path : !join [*mainsavepath, *dataname, /performance_scores]
+figures folder path : !join [*mainsavepath, *dataname, /figures]
+
+# -----------------------------------------------------------------------------------
+# SET IMPLEMENTATION VARIABLES
 # -----------------------------------------------------------------------------------
 
 # 1. Data properties ----------------------------------------------------------------
-
-dataset:
-  name : &dataname 1kplus
-  main path : &maindatapath data/
-  path : !join [*maindatapath, *dataname, _data_and_labels_outcome_pred.pkl]
-  splits path : !join [*maindatapath,*dataname,_training_test_sets.pkl]
 
 features: 
   AD_NIH : NIHSS
@@ -30,7 +40,7 @@ models to use :
 
 test size : 0.2
 
-number of splits :  40
+number of splits :  50
 
 final performance measures :
   - AUC
@@ -125,12 +135,7 @@ tuning hyperparameters :
 
 # 3. Saving options ------------------------------------------------------------------
 
-main save path : &mainsavepath modeling_results/
-models folder path : !join [*mainsavepath, *dataname, /models]
-parameters folder path : !join [*mainsavepath, *dataname, /parameters]
-importance folder path : !join [*mainsavepath, *dataname, /feature_importance_values]
-scores folder path : !join [*mainsavepath, *dataname, /performance_scores]
-figures folder path : !join [*mainsavepath, *dataname, /figures]
+
 
 
 
