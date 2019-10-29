@@ -22,8 +22,7 @@ __Exclusion Criteria:__
 * Patients with no mRS information were excluded.
 * Patients with infratentorial stroke and no visible DWI lesions were excluded.
 * Clinical predictors with more than 5% missing values were excluded.
-* Categorical clinical predictors with a yes/no ratio larger than 1/4 were excluded, in order to prevent category imbalance.
-                                 
+* Categorical clinical predictors with a yes/no ratio larger than 1/4 were excluded, in order to prevent category imbalance.                               
 
 The table below presents the clinical characteristics of the 1000plus dataset.
 
@@ -46,26 +45,20 @@ The figures below show the distribution of continuous and categorical predictors
 * The continuous predictors were centered using zero-mean unit-variance normalization.
 * Missing values were imputed using mean imputation
 
-
 ### Multicollinearity analysis
 The Variance Inflation Factor (VIF) was calculated for each of the clinical predictors to measure multicollinearity. The VIF analysis demonstrated negligible multicollinearity with VIFs < 1.91. The calculated VIF values for each predictor is given in the table below.
-
 
 |  Predictor Name | AD_NIH  | CH   | DG_SEX | RF_DM | RF_HC | DG_AG | AT_LY | 
 |-----------------|---------|------|--------|-------|-------|-------|-------|
 |  VIF            | 1.28    | 1.33 | 1.91   | 1.36  | 1.74  | 1.15  | 1.50  |
 
-
 ### Cross-validation Design
 * The data was split into training and test sets with a 4/1 ratio. Same training and test sets were used in all models to achieve comparable results. 
 * The models were tuned, i.e best hyperparameters were selected, using 10-folds cross-validation with gridsearch. Same folds were used for all models to achieve comparable results.
 * In order to account for data variability the above process was repeated 50 times; resulting in 50 splits tuned separately for each model.
-* The final performance is the mean, standard deviation as well as the median and iqr of the training and test AUC scores computed over 50 splits.
-
 
 ### Subsampling
 To target class imbalance, the training set was randomly sub-sampled to yield equal number of label classes, i.e equal number of patients with good and bad outcome.
-
 
 ### Linear predictive models: GLM, Lasso, Elastic Nets
 1. GLM (General Linear Model): A logistic regression model with no regularization term was implemented using sklearn's LogisticRegression class. 
@@ -74,27 +67,30 @@ To target class imbalance, the training set was randomly sub-sampled to yield eq
 
 3. Elactic Nets:  A logistic regression model with both L1 and L2 regularization was implemented using sklearn's SGDClassifier class. The strength of the different regularizations was adjusted using tuning hyperparameters alpha and gamma. The best values of alpha and gamma were chosen during model tuning.
 
-
 ### Non-linear predictive model: Tree Boosting
-A tree-boosting model is implemented using the Catboost package for python. Information on installation and how to use the package can be found here: https://tech.yandex.com/catboost/. The parameter for optimal tree count was automatically tuned by setting the overfitting detection parameters of the package. The best values of the L2 regularization term, tree depth, learning rate, leaf estimation iterations and bagging temperature were chosen during model tuning.
-
+A tree-boosting model is implemented using the [Catboost](https://tech.yandex.com/catboost/) package for Python. The parameter for optimal tree count was automatically tuned by setting the overfitting detection parameters of the package. The best values of the L2 regularization term, tree depth, learning rate, leaf estimation iterations and bagging temperature were chosen during model tuning.
 
 ### Non-linear predictive model: Multilayer Perceptron (MLP)
+An MLP model consisting of a single hidden layer was implemented using Keras running on Tensorflow backend. Early stopping was introduced during training in order to prevent overfitting. The best values of the L2 regularization term, dropout rate, batch size, learning rate and number of neurons in the hidden layer were chosen during model tuning.
 
-
+### Final performance assessment
+For each model:
+* Training and test performances are evaluated on the respective training and test sets of each split using Area Under the Receiver Operating Characteristics curve (AUC). 
+* The final performance is the median and iqr of the training and test AUC scores computed over 50 splits.
 
 ### Clinical parameters rating
 Three different explainability methods tailored to the different ML algorithms were used to calculate importance values for the clinical predictors used in the scope of this project. 
 
 1. GLM, Lasso and Elastic Net: Weights assigned to input features (predictors) in the trained GLM, Lasso and Elasticnet models were used as feature impoartance values.
-2. Tree Boosting (Catboost): Shapley values were used for systematically rating the importance (gain) of each of the input features (predictors) in the trained Catboost model. Shapley values were obtained using the Python package [SHAP](https://github.com/slundberg/shap)
-3. MLP: A gradient based algorithm called deep Taylor decomposition was used to find salient features in the trained MLP model. The gradients were obtained using the Python package [INNvestigate](https://github.com/albermax/innvestigate).
+2. Tree Boosting (Catboost): Shapley values were used for systematically rating the importance (gain) of each of the input features (predictors) in the trained Catboost model. Shapley values were obtained using the [SHAP](https://github.com/slundberg/shap) package for Python.
+3. MLP: A gradient based algorithm called deep Taylor decomposition was used to find salient features in the trained MLP model. The gradients were obtained using the [INNvestigate](https://github.com/albermax/innvestigate) package for Python.
 
-The absolute values of the calculated feature importance scores were scaled to unit norm in order to provide comparable feature rating across models. Then, for each feature the mean and standard deviation over the splits were calculated.
+* The absolute values of the calculated feature importance scores were scaled to unit norm (i.e normalized) in order to provide comparable feature rating across models. 
+* The final importance value assigned to each feature is the mean and standard deviation of their normalized scores over 50 splits.
 
 ## Results:
 
-### 1. Performance Results
+### Performance Results
 
 The table below presents the performance results calculated as AUC scores over 50 splits.
 
@@ -111,11 +107,15 @@ The table below presents the performance results calculated as AUC scores over 5
 | MLP        | median | 0.82           | 0.81       | 
 |            | iqr    | 0.03           | 0.07       | 
 
-![](images/all_performance_scores_random_subsampling.png)
+The figure below illustrates the performance of the different models evaluated on the test (blue) and training (orange) sets. The markers show showing the median AUC over 50 splits and the error bars represent  interquartile range (IQR).
 
-### 2. Clinical Predictors Importance Ratings
+![](images/AUC_scores_random_subsampling.tif)
 
-![](images/clinical_predictor_ratings_all_models_random_subsampling.png)
+### Clinical Predictors Importance Ratings
+
+The figure below illustrates the features rating derived from the model-tailored interpretability methods. The bar heights represent means and error bars represent standard deviation over 50 splits.
+
+![](images/clinical_predictor_ratings_all_models_random_subsampling.tif)
 
 ## Manual
 Manual to this framework can be found [here](manual.md).
