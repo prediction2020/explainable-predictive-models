@@ -35,9 +35,10 @@ The table below presents the clinical characteristics of the 1000plus dataset.
 
 The figures below show the distribution of continuous and categorical predictors in the 1000plus dataset.
 
-![](images/1kplus_hist_of_numerical_data.png)
-![](images/1kplus_hist_of_categorical_data.png)
-
+<p align="center">
+<img src="images/1kplus_hist_of_numerical_data.png" alt="fig1.1" width="500"/>
+<img src="images/1kplus_hist_of_categorical_data.png" alt="fig1.1" width="500"/>
+</p>
 
 ## Methods:
 
@@ -92,7 +93,7 @@ Three different explainability methods tailored to the different ML algorithms w
 
 ### Performance Results
 
-The table below presents the performance results calculated as AUC scores over 50 splits.
+The table below presents the performance results of the different models calculated as AUC scores over 50 splits.
 
 | Model      | Value  | AUC (training) | AUC (test) | 
 |------------|--------|----------------|------------|
@@ -109,7 +110,9 @@ The table below presents the performance results calculated as AUC scores over 5
 
 The figure below illustrates the performance of the different models evaluated on the test (blue) and training (orange) sets. The markers show showing the median AUC over 50 splits and the error bars represent  interquartile range (IQR).
 
-![](images/AUC_scores_random_subsampling.png)
+<p align="center">
+<img src="images/AUC_scores_random_subsampling.png" alt="fig2" width="500"/>
+</p>
 
 ### Clinical Predictors Importance Ratings
 
