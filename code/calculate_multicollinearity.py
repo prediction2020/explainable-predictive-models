@@ -9,13 +9,14 @@ calculates a Variance Inflation Factor (VIF) for each predictor to measure
 its multicollinearity. It saves the calculated VIF values into a csv file.
 """
 
-import pandas as pd
-import numpy as np
 import os
+
+import numpy as np
+import pandas as pd
 import yaml
 from statsmodels.stats.outliers_influence import variance_inflation_factor
-from utils.dataset import ClinicalDataset
 
+from utils.dataset import ClinicalDataset
 
 ########################################################################################
 ###### ASSIGN CONFIGURATION VARIABLES ##################################################

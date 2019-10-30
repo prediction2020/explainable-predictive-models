@@ -7,11 +7,13 @@ This file contains the ClinicalDataset class object that is used for working
 with a given dataset.
 """
 
+import pickle
+
 import numpy as np
 import pandas as pd
-import pickle
-from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+
 from utils.helper_functions import subsample
 
 

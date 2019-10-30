@@ -11,13 +11,13 @@ scores over the splits and stores them in a pandas.DataFrame. Finally, it saves 
 table of performance scores as a csv file.
 """
 
-import numpy as np
-import yaml
-import os
 import itertools
-from scipy.stats import iqr
-import pandas as pd
+import os
 
+import numpy as np
+import pandas as pd
+import yaml
+from scipy.stats import iqr
 
 ########################################################################################
 ###### ASSIGN CONFIGURATION VARIABLES ##################################################

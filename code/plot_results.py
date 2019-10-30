@@ -8,17 +8,17 @@ assessment. It reads the implementation and path options from the config.yml scr
 It saves the created plots as .png files.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pickle
-import yaml
-import os
 import itertools
+import os
+import pickle
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import yaml
 from scipy.stats import iqr
 
-import pandas as pd
-
-from utils.helper_functions import plot_performance, plot_features_rating
+from utils.helper_functions import plot_features_rating, plot_performance
 
 ########################################################################################
 ###### ASSIGN CONFIGURATION VARIABLES ##################################################

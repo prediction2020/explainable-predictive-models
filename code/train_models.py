@@ -13,16 +13,17 @@ saves the trained model(s) as .pkl or .h5 files and save the selected hyperparam
 as .json files.
 """
 
-import numpy as np
-import pickle
-import yaml
-import os
-import time
 import json
+import os
+import pickle
+import time
+
+import numpy as np
+import yaml
 from sklearn.model_selection import StratifiedKFold
 
-from utils.models import *
 from utils.dataset import *
+from utils.models import *
 
 ########################################################################################
 #### ENVIRONMENT AND SESSION SET UP ####################################################

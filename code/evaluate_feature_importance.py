@@ -10,13 +10,15 @@ scores using the model-specific explainability methods. Finally, it saves the ca
 feature importance scores as csv files.
 """
 
-import numpy as np
-import yaml
 import os
+
+import numpy as np
 import pandas as pd
-from utils.models import *
+import yaml
+
 from utils.dataset import *
-from utils.helper_functions import calc_shap_values, calc_deep_taylor_values
+from utils.helper_functions import calc_deep_taylor_values, calc_shap_values
+from utils.models import *
 
 ########################################################################################
 #### ENVIRONMENT AND SESSION SET UP ####################################################
