@@ -125,13 +125,16 @@ class GLM(Model):
 
 	.. py:meth:: GLM.train()
 	"""
-
+    def run_gridsearch(self) -> None:
+        pass
+        
     def train(self, **args):
         """
 		Trains a Generalized Linear Model (GLM).
 		"""
         self.best_model = LogisticRegression(**self.fixed_params)
         self.best_model.fit(self.X_tr, np.ravel(self.y_tr))
+
 
 
 class Lasso(Model):

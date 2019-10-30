@@ -23,7 +23,7 @@ figures folder path : !join [*mainsavepath, *dataname, /figures]
 features: 
   AD_NIH : NIHSS
   AT_LY : thrombolysis treatment
-  DG_SEX : gender
+  DG_SEX : sex
   RF_DM : diabetes
   RF_HC : hypercholesterol
   DG_AG : age 
@@ -40,7 +40,7 @@ models to use :
 
 test size : 0.2
 
-number of splits :  50
+number of splits :  2
 
 final performance measures :
   - AUC
