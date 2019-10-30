@@ -16,7 +16,7 @@
 
 Or you can use the environment file provided [here](environment.yml).
 
-Data files should be in .pkl file format.
+Data files should be in .pkl file format. Labels should be in the last column of the .pkl file.
 
 ### 1. Setting up the Configuration File
 
