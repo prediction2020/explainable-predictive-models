@@ -1,7 +1,7 @@
 """
 File name: models.py
 Author: Esra Zihni
-Date created: 
+Date created: 21.05.2018
 
 
 """
@@ -17,15 +17,15 @@ os.environ["KERAS_BACKEND"] = 'tensorflow'
 from keras.layers import Dense, Dropout
 from keras.models import Sequential, load_model
 from keras.callbacks import EarlyStopping
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from sklearn.model_selection import GridSearchCV, ParameterGrid
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from utils.helper_functions import calc_perf_score
 from typing import List, Dict, Union
 
-class Model:
+class Model(metaclass = ABCMeta):
 	"""
-	A class used to represent models.
+	A metaclass used to represent any model.
 
 	:param name: Name of the model 
 	:param dataset: The dataset for the model to train on
@@ -34,14 +34,10 @@ class Model:
 
 	.. py:meth:: Model.load_model(path)
 		:param path: Path to model file.
-
-	.. py:meth:: Model.run_gridsearch()
-	
+	.. py:meth:: Model.run_gridsearch()	
 	.. py_meth:: Model.train()
-
 	.. py.meth:: Model.save_model(path)
 		:param path: Path to model file.
-
 	.. py.meth:: Model.evaluate_performance(score_name)
 		:param score_name: Name of the performance measure.
 		:return: Training and test performance scores 
@@ -109,6 +105,13 @@ class Model:
 
 
 class GLM(Model):
+	"""
+	A subclass of the Model metaclass used to represent a Generalized
+	Linear Model (GLM).
+
+	.. py:meth:: GLM.train()
+
+	"""
 	def train(self, **args):
 		"""
 		Trains a Generalized Linear Model (GLM).
@@ -118,6 +121,13 @@ class GLM(Model):
 
 
 class Lasso(Model):
+		"""
+		A subclass of the Model metaclass used to represent a Lasso model.
+
+		.. py:meth:: Lasso.run_gridsearch()
+		.. py:meth:: Lasso.train()
+
+		"""
 	def run_gridsearch(self,cv,cv_score:str)-> None:
 		"""
 		Performs a gridsearch over the tuning hyperparameters. Determines the 

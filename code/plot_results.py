@@ -1,3 +1,12 @@
+"""
+File name: plot_results.py
+Author: Esra Zihni
+Date created: 27.07.2018
+
+
+
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle

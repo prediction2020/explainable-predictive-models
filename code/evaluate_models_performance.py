@@ -1,3 +1,16 @@
+"""
+File name: evaluate_models_performance.py
+Author: Esra Zihni
+Date created: 21.05.2018
+
+This is the main script to evaluate models performance. It reads the implementation 
+and path options from the config.yml script. It loads the training and test sets, 
+loads the specified trained model(s) and calculates the training and test performance 
+scores using the specified performance measure(s). It repeats the same process for 
+the specified number of splits. Finally, it saves the calculated performance scores 
+as csv files.
+"""
+
 import numpy as np
 import yaml
 import os
@@ -52,6 +65,7 @@ scores_folder = cfg['scores folder path']
 ###### GET TRAINING AND TEST DATA ######################################################
 ########################################################################################
 
+# Load dataset
 data = ClinicalDataset(name = dataset_name, path = dataset_path)
 
 # Load the training-test splits as a class instance variable using the 

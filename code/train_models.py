@@ -1,3 +1,18 @@
+"""
+File name: train_models.py
+Author: Esra Zihni
+Date created: 21.05.2018
+
+
+This is the main script for training models. It reads the implementation and path 
+options from the config.yml script. It loads the dataset, splits the data into training 
+and test sets, creates the specified model(s), runs gridsearch to select the best 
+hyperparameters if run gridsearch option is valid and trains model(s) on the training 
+set. It repeats the same process for the specified number of splits. Finally, it 
+saves the trained model(s) as .pkl or .h5 files and save the selected hyperparameters 
+as .json files.
+"""
+
 import numpy as np
 import pickle
 import yaml
@@ -56,6 +71,7 @@ params_folder = cfg['parameters folder path']
 ###### GET TRAINING AND TEST DATA ######################################################
 ########################################################################################
 
+# Load dataset
 data = ClinicalDataset(name = dataset_name, path = dataset_path)
 data.preprocess()
 # For the initial assignment of training-test sets you have to specify the test set size, 

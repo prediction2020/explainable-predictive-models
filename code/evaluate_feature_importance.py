@@ -1,3 +1,15 @@
+"""
+File name: evaluate_feature_importance.py
+Author: Esra Zihni
+Date created: 10.08.2018
+
+This is the main script to evaluate the importance of predictors. It reads the 
+implementation and path options from the config.yml script. It loads the training and 
+test sets, loads the specified trained model(s) and calculates features importance 
+scores using the model-specific explainability methods. Finally, it saves the calculated 
+feature importance scores as csv files.
+"""
+
 import numpy as np
 import yaml
 import os

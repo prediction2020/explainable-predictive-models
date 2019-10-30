@@ -1,7 +1,7 @@
 """
 File name: helper_functions.py
 Author: Esra Zihni
-Date created: 
+Date created: 15.02.2018
 
 This file contains helper functions for other scripts.
 """
