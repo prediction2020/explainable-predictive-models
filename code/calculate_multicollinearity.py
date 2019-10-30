@@ -14,6 +14,7 @@ import numpy as np
 import os
 import yaml
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from utils.dataset import ClinicalDataset
 
 
 ########################################################################################
@@ -49,14 +50,19 @@ data.preprocess()
 df = data.X
 
 # Get names of predictors
-predictor_names = data.cols
+predictor_names = data.preds
+
+# First convert all data types to float64 - this is needed in order to use 
+# the variance_inflation_factor function
+for i, col in enumerate(predictor_names):
+    df[col] = df[col].astype("float64")
 
 # Calculate VIF values for each predictor
 vif = np.array([variance_inflation_factor(df.values, i) for i in range(df.shape[1])])
 
 # Save VIFs to a pandas DataFrame
 df_vif = pd.DataFrame(
-    vif, index=parameter_names, columns=["Variance Inflation Factor(VIF)"]
+    vif, index=predictor_names, columns=["Variance Inflation Factor(VIF)"]
 )
 
 

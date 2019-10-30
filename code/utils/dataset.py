@@ -55,17 +55,13 @@ class ClinicalDataset:
         self.cat_data = self.df.columns[self.df.dtypes == "category"]
         self.num_data = list(set(self.cols) - set(self.cat_data))
         self.X, self.y = self.df.drop(self.label, axis=1), self.df[[self.label]]
+        self.preds = list(self.X)
         self.cat_preds = self.X.columns[self.X.dtypes == "category"]
 
     def preprocess(self):
         """
         Centers the continuous data in the dataset.
         """
-        # First convert all data types to float64 - this is needed in order to use 
-        # the StandardScaler function
-        for i, col in enumerate(self.cols):
-            self.df[col] = self.df[col].astype("float64")
-
         # Center numeric data
         self.X.loc[:, self.num_data] = preprocessing.StandardScaler().fit_transform(
             self.X.loc[:, self.num_data]

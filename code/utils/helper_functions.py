@@ -190,9 +190,6 @@ def calc_deep_taylor_values(model):
         high=input_range[1],
     )
 
-    # Some analyzers require training. You will get a warning message for the 
-    # redundently fitted analyzer, you can ignore it
-    # gradient_analyzer.fit(seed_input, batch_size=16, verbose=1)
     analysis = gradient_analyzer.analyze(seed_input)
 
     # Calculate score based average
