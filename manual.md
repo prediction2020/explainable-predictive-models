@@ -16,6 +16,7 @@
 
 Or you can use the environment file provided [here](environment.yml).
 
+Data files should be in .pkl file format.
 
 ### 1. Setting up the Configuration File
 

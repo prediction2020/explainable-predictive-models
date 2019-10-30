@@ -20,28 +20,29 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 ###### ASSIGN CONFIGURATION VARIABLES ##################################################
 ########################################################################################
 
-# You need to add constructor in order to be able to use the join command in the yaml 
+# You need to add constructor in order to be able to use the join command in the yaml
 # file
-def join(loader,node):
+def join(loader, node):
     seq = loader.construct_sequence(node)
-    return ''.join(str(i) for i in seq)
+    return "".join(str(i) for i in seq)
 
-yaml.add_constructor('!join',join)
+
+yaml.add_constructor("!join", join)
 
 # Read the config file
-cfg = yaml.load(open('config.yml', 'r'))
+cfg = yaml.load(open("config.yml", "r"))
 
 # Assign variables
-dataset_name = cfg['dataset name']
-dataset_path = cfg['data path']
-to_save_path = 'data_analysis/multicollinearity_analysis/'
+dataset_name = cfg["dataset name"]
+dataset_path = cfg["data path"]
+to_save_path = "data_analysis/multicollinearity_analysis/"
 
 
 #########################################################################################
 ###### CALCULATE AND SAVE VARIANCE INFLATION FACTORS ####################################
 #########################################################################################
 
-data = ClinicalDataset(name = dataset_name, path = dataset_path)
+data = ClinicalDataset(name=dataset_name, path=dataset_path)
 data.preprocess()
 
 
@@ -54,7 +55,9 @@ predictor_names = data.cols
 vif = np.array([variance_inflation_factor(df.values, i) for i in range(df.shape[1])])
 
 # Save VIFs to a pandas DataFrame
-df_vif = pd.DataFrame(vif, index=parameter_names, columns=['Variance Inflation Factor(VIF)'])
+df_vif = pd.DataFrame(
+    vif, index=parameter_names, columns=["Variance Inflation Factor(VIF)"]
+)
 
 
 # Create folder to save results if it doesn't exist
@@ -62,6 +65,6 @@ if not os.path.exists(to_save_path):
     os.makedirs(to_save_path)
 
 # Save values
-df_vif.to_csv(f'{to_save_path}{dataset_name}_multicollinearity.csv',float_format= '%2.2f')
-
-
+df_vif.to_csv(
+    f"{to_save_path}{dataset_name}_multicollinearity.csv", float_format="%2.2f"
+)
