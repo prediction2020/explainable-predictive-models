@@ -82,7 +82,7 @@ Custom trained models can be evaluated if the models file format is compatible (
 
 ### 4. Evaluate Features Importance
 
-Run the script evaluate_feature_importance.py under code/. 
+Run the script evaluate_feature_importance.py under code/ to calculate the model-specific feature importance values. 
 
 Calculated importance values will be saved in the following format:
     
@@ -95,4 +95,11 @@ Custom trained models can be evaluated if the models file format is compatible (
 
 ### 5. Visualization
 
+Run the script plot_results.py to visualize the overall performance and/or features ratings.
+
+Created figures will be saved in the following format:
+
+    [figures folder path]/performance_scores_[subsampling_type]_subsampling.png (Performance)
+    [figures folder path]/clinical_features_rating_[subsampling_type]_subsampling.png (Features rating)
+	
 
