@@ -7,23 +7,25 @@ This file contains the Model metaclass object that is used for implementing
 the given models. It contains a class object for each individual model type.
 """
 
-import numpy as np
 import os
-import pandas as pd
 import pickle
+from abc import ABCMeta, abstractmethod
+from typing import Dict, List, Union
+
 import catboost as cat
 import keras
+import numpy as np
+import pandas as pd
 import tensorflow as tf
-
-os.environ["KERAS_BACKEND"] = "tensorflow"
+from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout
 from keras.models import Sequential, load_model
-from keras.callbacks import EarlyStopping
-from abc import ABCMeta, abstractmethod
-from sklearn.model_selection import GridSearchCV, ParameterGrid
 from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.model_selection import GridSearchCV, ParameterGrid
+
 from utils.helper_functions import calc_perf_score
-from typing import List, Dict, Union
+
+os.environ["KERAS_BACKEND"] = "tensorflow"
 
 
 class Model(metaclass=ABCMeta):

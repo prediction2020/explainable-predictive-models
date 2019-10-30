@@ -11,14 +11,15 @@ the specified number of splits. Finally, it saves the calculated performance sco
 as csv files.
 """
 
-import numpy as np
-import yaml
 import os
-import keras
-import pandas as pd
 
-from utils.models import *
+import keras
+import numpy as np
+import pandas as pd
+import yaml
+
 from utils.dataset import *
+from utils.models import *
 
 ########################################################################################
 #### ENVIRONMENT AND SESSION SET UP ####################################################

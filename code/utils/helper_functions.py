@@ -6,21 +6,22 @@ Date created: 15.02.2018
 This file contains helper functions for other scripts.
 """
 
-import numpy as np
-import pandas as pd
 import catboost as cat
-import keras
-import matplotlib.pyplot as plt
-from scipy.stats import iqr
-import seaborn as sns
-from keras import activations
-import shap
-from sklearn import preprocessing
-from vis.utils import utils
 import innvestigate
 import innvestigate.utils as iutils
 import innvestigate.utils.keras.graph as inkgraph
-from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, recall_score
+import keras
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import shap
+from keras import activations
+from scipy.stats import iqr
+from sklearn import preprocessing
+from sklearn.metrics import (accuracy_score, f1_score, recall_score,
+                             roc_auc_score)
+from vis.utils import utils
 
 
 def subsample(X, y, subsampling_type: str):

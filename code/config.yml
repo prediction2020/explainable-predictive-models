@@ -40,7 +40,7 @@ models to use :
 
 test size : 0.2
 
-number of splits :  2
+number of splits :  50
 
 final performance measures :
   - AUC
