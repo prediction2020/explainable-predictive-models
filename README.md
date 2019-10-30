@@ -31,7 +31,7 @@ The table below presents the clinical characteristics of the 1000plus dataset.
 | Median age (IQR)                 | 72.0 (15.0) | Cardiac history (yes/ no)      | 84/ 230  | 
 | Median Initial NIHSS (IQR)       | 3 (5)       | Diabetes (yes/ no)             | 79/ 235  | 
 | Thrombolysis (yes/ no)           | 74/ 240     | Hypercholesterolemia (yes/ no) | 182/ 132 |  
-| Females/ males                   | 196/ 118    | 								                |          |
+| Sex (Females/ males              | 196/ 118    | 								                |          |
 
 The figures below show the distribution of continuous and categorical predictors in the 1000plus dataset.
 
