@@ -2,6 +2,12 @@
 
 This repository contains the implementation and evaluation of linear (GLM, Lasso and Elastic Net) and non-linear (Tree Boosting and Multilayer Perceptron) models for predicting stroke outcome in acute-ischemic patients; as well as the implementation of explainability methods to determine clinical predictors (features) importance for outcome prediction. 
 
+## Publication
+
+### Preprint
+https://www.medrxiv.org/content/10.1101/19010975v1
+
+
 ## Data
 314 patients with acute ischemic stroke from the 1000plus study were included. Currently the clinical data cannot be made publicly accessible due to data protection.
 
