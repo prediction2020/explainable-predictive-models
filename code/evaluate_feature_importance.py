@@ -53,6 +53,7 @@ dataset_name = cfg["dataset name"]
 dataset_path = cfg["data path"]
 splits_path = cfg["splits path"]
 number_of_splits = cfg["number of splits"]
+impute_data = cfg["impute data"]
 models_to_use = cfg["models to use"]
 subsampling_types = cfg["subsampling to use"]
 performance_scores = cfg["final performance measures"]
@@ -71,6 +72,12 @@ data = ClinicalDataset(name=dataset_name, path=dataset_path)
 # assign_train_test_sets function with only the path to the splits file
 data.assign_train_test_splits(splits_path)
 
+# Preprocess data
+if impute_data: 
+    data.impute(number_of_splits=number_of_splits, imputation_type="mean/mode")
+
+data.normalize(number_of_splits=number_of_splits)
+
 print("Number of patients in dataset: " + str(len(data.X)))
 
 
@@ -84,7 +91,7 @@ if not os.path.exists(importance_folder):
 
 # Iterate over subsampling types
 for subs in subsampling_types:
-    data.subsample_training_set(number_of_splits, subs)
+    data.subsample_training_sets(number_of_splits, subs)
 
     # Iterate over models
     for mdl in models_to_use:
@@ -101,7 +108,7 @@ for subs in subsampling_types:
             )
         elif mdl == "MLP":
             path_to_imp_values = (
-                f"{importance_folder}/{mdl}_dt_values_{subs}_subsampling.csv"
+                f"{importance_folder}/{mdl}_score_based_averaged_dt_values_{subs}_subsampling.csv"
             )
 
         # Check if the importance values file path already exists. If it exists, return

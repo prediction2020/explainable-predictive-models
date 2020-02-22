@@ -54,6 +54,7 @@ dataset_name = cfg["dataset name"]
 dataset_path = cfg["data path"]
 splits_path = cfg["splits path"]
 number_of_splits = cfg["number of splits"]
+impute_data = cfg["impute data"]
 models_to_use = cfg["models to use"]
 subsampling_types = cfg["subsampling to use"]
 fixed_parameters = cfg["fixed hyperparameters"]
@@ -73,6 +74,12 @@ data = ClinicalDataset(name=dataset_name, path=dataset_path)
 # assign_train_test_sets function with only the path to the splits file
 data.assign_train_test_splits(path=splits_path)
 
+# Preprocess data
+if impute_data: 
+    data.impute(number_of_splits=number_of_splits, imputation_type="mean/mode")
+
+data.normalize(number_of_splits=number_of_splits)
+
 print("Number of patients in dataset: " + str(len(data.X)))
 
 
@@ -86,7 +93,7 @@ if not os.path.exists(scores_folder):
 
 # Iterate over subsampling types
 for subs in subsampling_types:
-    data.subsample_training_set(
+    data.subsample_training_sets(
         number_of_splits=number_of_splits, subsampling_type=subs
     )
 

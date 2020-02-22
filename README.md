@@ -51,6 +51,7 @@ The figures below show the distribution of continuous and categorical predictors
 ### Data Preprocessing
 * The continuous predictors were centered using zero-mean unit-variance normalization.
 * Missing values were imputed using mean imputation
+* Both pre-processing steps were applied based on the training set after the data was split into training and test sets.
 
 ### Multicollinearity analysis
 The Variance Inflation Factor (VIF) was calculated for each of the clinical predictors to measure multicollinearity. The VIF analysis demonstrated negligible multicollinearity with VIFs < 1.91. The calculated VIF values for each predictor is given in the table below.

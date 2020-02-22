@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------------
 
 
-data path : data/1kplus_data_and_labels_outcome_pred.pkl
+data path : data/1kplus_data_and_labels_outcome_pred_with_nans.pkl
 splits path : data/1kplus_training_test_sets.pkl
 
 dataset name : &dataname 1kplus
@@ -30,6 +30,8 @@ features:
   CH : cardiac history
 
 # 2. Modeling Properties ------------------------------------------------------------
+
+impute data : Yes
 
 models to use :
   - GLM

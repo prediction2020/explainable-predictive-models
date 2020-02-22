@@ -8,9 +8,6 @@ This file contains helper functions for other scripts.
 
 import catboost as cat
 import innvestigate
-import innvestigate.utils as iutils
-import innvestigate.utils.keras.graph as inkgraph
-import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -139,6 +136,7 @@ def calc_shap_values(dataset, model):
         list(model.X_tr).index(dataset.cat_preds[i])
         for i in range(len(dataset.cat_preds))
     ]
+
     shap_values = explainer.shap_values(
         cat.Pool(model.X_tr, model.y_tr, cat_features=cat_features)
     )
