@@ -314,9 +314,9 @@ def plot_features_rating(values, sub_type, path):
         )
 
         if mdl == "Catboost":
-            ax[0, i].set_xlabel("|shap values|", size=9)
+            ax[0, i].set_xlabel("|SHAP values|", size=9)
         elif mdl == "MLP":
-            ax[0, i].set_xlabel("|deep taylor values|", size=9)
+            ax[0, i].set_xlabel("|deep Taylor values|", size=9)
         else:
             ax[0, i].set_xlabel("|weights|", size=9)
         ax[0, i].set_title(
