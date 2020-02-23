@@ -25,7 +25,7 @@ features:
   AT_LY : thrombolysis treatment
   DG_SEX : sex
   RF_DM : diabetes
-  RF_HC : hypercholesterol
+  RF_HC : hypercholesterolemia
   DG_AG : age 
   CH : cardiac history
 
