@@ -26,6 +26,7 @@ Implementation options are:
 
 - features : Dictionary of feature names with keys respresenting column names in dataset and values representing names 
 to be displayed in the feature importance plots.
+- impute data : Option to use data imputation for NaN values. Must be set to 'yes' to perform mean/mode imputation. 
 - models to use : List of model names to be trained and evaluated (e.g GLM, Lasso etc.). Any model to be used has to be 
 defined as a model class [here](code/utils/models.py) and has to be listed in the exact name of the defined class.
 - test size: The proportion of the dataset to include in the test split. 

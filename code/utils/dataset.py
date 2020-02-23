@@ -60,14 +60,6 @@ class ClinicalDataset:
         self.preds = list(self.X)
         self.cat_preds = self.X.columns[self.X.dtypes == "category"]
 
-    def preprocess(self):
-        """
-        Centers the continuous data in the dataset.
-        """
-        # Center numeric data
-        self.X.loc[:, self.num_data] = preprocessing.StandardScaler().fit_transform(
-            self.X.loc[:, self.num_data]
-        )
 
     def assign_train_test_splits(
         self, path: str, test_size: float = None, splits: int = None
@@ -108,7 +100,7 @@ class ClinicalDataset:
 
             pickle.dump(self.splits, open(path, "wb"))
 
-    def subsample_training_set(
+    def subsample_training_sets(
         self, number_of_splits: int, subsampling_type: str
     ) -> None:
         """
@@ -123,3 +115,44 @@ class ClinicalDataset:
                 self.splits[i]["train_labels"],
                 subsampling_type,
             )
+
+    def impute(self, number_of_splits: int, imputation_type: str = "mean/mode")-> None:
+        """
+        
+        """
+        for i in range(number_of_splits):
+            train = self.splits[i]["train_data"].copy()
+            test = self.splits[i]["test_data"].copy()
+
+            if imputation_type == "mean/mode":
+                # Calculate the mean of numerical variables in the dataset and round the 
+                # floating point to two.
+                num_data_means_training = round(train.loc[:, self.num_data].mean(),2)
+                # Calculate the mode of categorical data in the dataset
+                cat_data_modes_training = round(train.loc[:, self.cat_preds].mean())
+
+                train.fillna(pd.concat((num_data_means_training,cat_data_modes_training)), inplace = True)
+                test.fillna(pd.concat((num_data_means_training,cat_data_modes_training)), inplace = True)
+
+                self.splits[i]["train_data"] = train
+                self.splits[i]["test_data"]= test
+            
+
+    def normalize(self, number_of_splits: int)-> None:
+        """
+        Scales the continuous data in the dataset.
+        """
+        # Center numeric data
+        for i in range(number_of_splits):
+            train = self.splits[i]["train_data"].loc[:, self.num_data].copy()
+            test = self.splits[i]["test_data"].loc[:, self.num_data].copy()
+
+            num_data_means_training = train.mean()
+            num_data_stds_training = train.std()
+
+            scaled_train = (train - num_data_means_training) / num_data_stds_training
+            scaled_test = (test - num_data_means_training) / num_data_stds_training
+
+            self.splits[i]["train_data"].loc[:, self.num_data] = scaled_train
+            self.splits[i]["test_data"].loc[:, self.num_data] = scaled_test
+

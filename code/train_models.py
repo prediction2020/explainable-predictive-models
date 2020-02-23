@@ -58,6 +58,7 @@ dataset_name = cfg["dataset name"]
 dataset_path = cfg["data path"]
 splits_path = cfg["splits path"]
 number_of_splits = cfg["number of splits"]
+impute_data = cfg["impute data"]
 models_to_train = cfg["models to use"]
 subsampling_types = cfg["subsampling to use"]
 test_size = cfg["test size"]
@@ -75,18 +76,22 @@ params_folder = cfg["parameters folder path"]
 
 # Load dataset
 data = ClinicalDataset(name=dataset_name, path=dataset_path)
-data.preprocess()
 # For the initial assignment of training-test sets you have to specify the test set size,
 # the required number of splits and the path to save the created splits.
 #
 data.assign_train_test_splits(
     path=splits_path, test_size=test_size, splits=number_of_splits
 )
-
 # If the splits have already been created and saved you can just load them as a class
 # instance variable using the assign_train_test_sets function with only the path to the
 # splits file
-# Data.assign_train_test_splits(splits_path)
+# data.assign_train_test_splits(splits_path)
+
+# Preprocess data
+if impute_data: 
+    data.impute(number_of_splits=number_of_splits, imputation_type="mean/mode")
+
+data.normalize(number_of_splits=number_of_splits)
 
 print("Number of patients in dataset: " + str(len(data.X)))
 
@@ -114,9 +119,10 @@ for subs in subsampling_types:
 
     # Subsample the training data given the subsampling type. In order to provide
     # comparable results, the seed was fixed for random sampling.
-    data.subsample_training_set(
+    data.subsample_training_sets(
         number_of_splits=number_of_splits, subsampling_type=subs
     )
+
 
     # Iterate over model classes
     for mdl in models_to_train:
@@ -129,7 +135,6 @@ for subs in subsampling_types:
 
         # Iterate over splits
         for i in range(number_of_splits):
-
             # Assign path to model file to be trained on the current split
             path_to_model = f"{models_folder}/{mdl}_model_{subs}_subsampling_split_{i+1}{file_suffix}"
 
@@ -140,6 +145,9 @@ for subs in subsampling_types:
                 fixed_params=fixed_params,
                 tuning_params=tune_params,
             )
+
+            print(f"Number of training samples: {len(model.y_tr)}")
+            print(f"Number of test samples: {len(model.y_te)}")
 
             # Check if the model file path already exists.
             if os.path.isfile(path_to_model):
