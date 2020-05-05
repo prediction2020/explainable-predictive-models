@@ -4,7 +4,7 @@
 - Python version 3.6
 - Tensorflow 1.12.0
 - Keras 2.2.4
-- Catboost 0.14.2
+- Catboost 0.16.5
 - Scikit learn 0.20.3
 - Shap 0.28.5
 - Keras-vis 0.5.0
