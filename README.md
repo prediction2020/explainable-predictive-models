@@ -4,8 +4,7 @@ This repository contains the implementation and evaluation of linear (GLM, Lasso
 
 ## Publication
 
-### Preprint
-https://www.medrxiv.org/content/10.1101/19010975v1
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0231166
 
 
 ## Data
