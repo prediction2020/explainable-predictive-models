@@ -37,7 +37,7 @@ dependencies:
   - c-ares=1.15.0=h14c3975_1001
   - ca-certificates=2019.9.11=hecc5488_0
   - cairo=1.14.12=h8948797_3
-  - catboost=0.14.2=py36_2
+  - catboost=0.16.5=py36_2
   - certifi=2019.9.11=py36_0
   - cffi=1.12.2=py36h2e261b9_1
   - chardet=3.0.4=py36_1
