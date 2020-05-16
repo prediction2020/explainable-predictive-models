@@ -33,6 +33,8 @@ features:
 
 impute data : Yes
 
+imputation type : mean/mode
+
 models to use :
   - GLM
   - Lasso

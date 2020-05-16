@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn import preprocessing
 
 from utils.dataset import ClinicalDataset
 
@@ -37,6 +38,7 @@ cfg = yaml.load(open("config.yml", "r"))
 # Assign variables
 dataset_name = cfg["dataset name"]
 dataset_path = cfg["data path"]
+imputation_type = cfg["imputation type"]
 to_save_path = "data_analysis/multicollinearity_analysis/"
 
 
@@ -45,10 +47,22 @@ to_save_path = "data_analysis/multicollinearity_analysis/"
 #########################################################################################
 
 data = ClinicalDataset(name=dataset_name, path=dataset_path)
-data.preprocess()
-
-
 df = data.X
+
+# Impute missing values
+if imputation_type == "mean/mode":
+    # Calculate the mean of numerical variables in the dataset and round the 
+    # floating point to two.
+    num_data_means = round(df.loc[:, data.num_data].mean(),2)
+    # Calculate the mode of categorical data in the dataset
+    cat_data_modes = round(df.loc[:, data.cat_preds].mean())
+
+    df.fillna(pd.concat((num_data_means,cat_data_modes)), inplace = True)   
+
+# Center numeric data
+df.loc[:, data.num_data] = preprocessing.StandardScaler().fit_transform(
+    df.loc[:, data.num_data]
+)
 
 # Get names of predictors
 predictor_names = data.preds

@@ -59,6 +59,7 @@ dataset_path = cfg["data path"]
 splits_path = cfg["splits path"]
 number_of_splits = cfg["number of splits"]
 impute_data = cfg["impute data"]
+imputation_type = cfg["imputation type"]
 models_to_train = cfg["models to use"]
 subsampling_types = cfg["subsampling to use"]
 test_size = cfg["test size"]
@@ -89,7 +90,7 @@ data.assign_train_test_splits(
 
 # Preprocess data
 if impute_data: 
-    data.impute(number_of_splits=number_of_splits, imputation_type="mean/mode")
+    data.impute(number_of_splits=number_of_splits, imputation_type=imputation_type)
 
 data.normalize(number_of_splits=number_of_splits)
 
