@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn import preprocessing
 
 from utils.dataset import ClinicalDataset
 
@@ -45,8 +46,11 @@ to_save_path = "data_analysis/multicollinearity_analysis/"
 #########################################################################################
 
 data = ClinicalDataset(name=dataset_name, path=dataset_path)
-data.preprocess()
 
+# Center numeric data
+data.X.loc[:, data.num_data] = preprocessing.StandardScaler().fit_transform(
+    data.X.loc[:, data.num_data]
+)
 
 df = data.X
 
