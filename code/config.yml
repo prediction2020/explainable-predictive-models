@@ -3,10 +3,10 @@
 # -----------------------------------------------------------------------------------
 
 
-data path : data/1kplus_data_and_labels_outcome_pred_with_nans.pkl
-splits path : data/1kplus_training_test_sets.pkl
+data path : data/data_run.pkl
+splits path : splits/data_run_data_splits.pkl
 
-dataset name : &dataname 1kplus
+dataset name : &dataname data_run
 main results folder : &mainsavepath modeling_results/
 models folder path : !join [*mainsavepath, *dataname, /models]
 parameters folder path : !join [*mainsavepath, *dataname, /parameters]
@@ -20,14 +20,11 @@ figures folder path : !join [*mainsavepath, *dataname, /figures]
 
 # 1. Data properties ----------------------------------------------------------------
 
-features: 
-  AD_NIH : NIHSS
-  AT_LY : thrombolysis treatment
-  DG_SEX : sex
-  RF_DM : diabetes
-  RF_HC : hypercholesterolemia
-  DG_AG : age 
-  CH : cardiac history
+features:
+  age_clin : age
+  GCS_clin : GCS
+  Sex_clin : sex
+  Pup_clin : pupil status
 
 # 2. Modeling Properties ------------------------------------------------------------
 
@@ -36,11 +33,14 @@ impute data : Yes
 imputation type : mean/mode
 
 models to use :
-  - GLM
-  - Lasso
-  - ElasticNet
-  - Catboost
-  - MLP
+  - GLM: [shap,weights]
+  - Lasso: [shap,weights]
+  - ElasticNet: [shap,weights]
+  - Catboost: [shap]
+  - MLP: [shap,taylor]
+  - SVMC: [shap]
+  - NB: [shap]
+
 
 test size : 0.2
 
@@ -51,9 +51,15 @@ final performance measures :
   - accuracy
   - average_class_accuracy
   - f1
+  - precision_PPV
+  - NPV
+  - recall_sensitivity
+  - specificity
+  - brier_score_loss
 
 subsampling to use :
   - random
+
 
 fixed hyperparameters:
   GLM :
@@ -97,6 +103,23 @@ fixed hyperparameters:
     optimizer : adam
     weight_init : uniform
 
+  SVMC :
+    C : 1.0
+    kernel : 'rbf'
+    degree : 3
+    gamma : 'auto'
+    coef0 : 0.0
+    shrinking : yes
+    probability : yes
+    tol : 0.001
+    cache_size : 200
+    verbose : no
+    max_iter : -1
+    decision_function_shape : 'ovr'
+
+  NB :
+    var_smoothing : 0.000000001
+
 # 2.1. Grid Search Options ----------------------------------------------------------
 
 use gridsearch : Yes
@@ -105,22 +128,23 @@ cross-validation folds : 10
 
 cross-validation score : AUC
 
+
 tuning hyperparameters :
   GLM : None
 
   Lasso :
-    C : [0.1, 0.1207, 0.1456, 0.1758, 0.2121, 0.256, 0.3089, 0.3728, 0.4498, 
-         0.5429, 0.6551, 0.7906, 0.9541, 1.1514, 1.3895, 1.6768, 2.0236, 
-         2.4421, 2.9471, 3.5565, 4.2919, 5.1795, 6.2506, 7.5431, 9.103, 
-         10.9854, 13.2571, 15.9986, 19.307, 23.2995, 28.1177, 33.9322, 
-         40.9492, 49.4171, 59.6362, 71.9686, 86.8511, 104.8113, 126.4855, 
-         152.6418, 184.207, 222.2996, 268.2696, 323.7458, 390.694, 471.4866, 
+    C : [0.1, 0.1207, 0.1456, 0.1758, 0.2121, 0.256, 0.3089, 0.3728, 0.4498,
+         0.5429, 0.6551, 0.7906, 0.9541, 1.1514, 1.3895, 1.6768, 2.0236,
+         2.4421, 2.9471, 3.5565, 4.2919, 5.1795, 6.2506, 7.5431, 9.103,
+         10.9854, 13.2571, 15.9986, 19.307, 23.2995, 28.1177, 33.9322,
+         40.9492, 49.4171, 59.6362, 71.9686, 86.8511, 104.8113, 126.4855,
+         152.6418, 184.207, 222.2996, 268.2696, 323.7458, 390.694, 471.4866,
          568.9866, 686.6488, 828.6428, 1000.0]
 
   ElasticNet :
-    l1_ratio : [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 
+    l1_ratio : [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
                 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-    alpha : [0.00001, 0.00004, 0.00016, 0.0006, 0.0025, 0.01, 0.04, 0.16, 
+    alpha : [0.00001, 0.00004, 0.00016, 0.0006, 0.0025, 0.01, 0.04, 0.16,
              0.63, 2.5, 10.0]
 
   Catboost :
@@ -137,10 +161,11 @@ tuning hyperparameters :
     dropout_rate : [0.1, 0.2]
     l1_ratio : [0.0001,0.001]
 
+  SVMC :
+    C : [0.01, 0.1, 1, 10, 100, 1000, 10000, 100000, 1000000]
+    kernel : ['linear', 'poly', 'rbf', 'sigmoid']
+    degree : [2,3,5]
+
+  NB : None
+
 # 3. Saving options ------------------------------------------------------------------
-
-
-
-
-
-

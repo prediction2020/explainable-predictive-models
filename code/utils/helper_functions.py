@@ -6,26 +6,26 @@ Date created: 15.02.2018
 This file contains helper functions for other scripts.
 """
 
-#import catboost as cat
-#import innvestigate
-#import matplotlib.pyplot as plt
-#import numpy as np
-#import pandas as pd
-#import seaborn as sns
-#import shap
-#from keras import activations
-#from scipy.stats import iqr
-#from sklearn import preprocessing
-#from sklearn.metrics import (accuracy_score, f1_score, recall_score,
-#                             roc_auc_score)
-#from vis.utils import utils
+import catboost as cat
+import innvestigate
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import shap
+from keras import activations
+from scipy.stats import iqr
+from sklearn import preprocessing
+from sklearn.metrics import (accuracy_score, f1_score, recall_score,
+                             roc_auc_score, precision_score, brier_score_loss)
+from vis.utils import utils
 
 
 def subsample(X, y, subsampling_type: str):
     """
-    If subsampling type is defined as 'random', randomly sub-samples the given 
-    data to yield equal number of label classes. Otherwise if subsampling type 
-    is defined as 'none', returns original data. 
+    If subsampling type is defined as 'random', randomly sub-samples the given
+    data to yield equal number of label classes. Otherwise if subsampling type
+    is defined as 'none', returns original data.
 
     :param X: Data input variables
     :param y: Data labels
@@ -103,15 +103,24 @@ def calc_perf_score(data, labels, model, model_name: str, score_name: str):
     :param score_name: Name of the performance measure.
     :return: Performance score
     """
+
+    global score
+
     if isinstance(labels, pd.DataFrame):
         labels.iloc[:, 0] = labels.iloc[:, 0].astype("float64")
 
+    probs = predict_probability(data, model, model_name)
+    preds = predict_class(data, model, model_name)
+
+    #scores using probs
     if score_name == "AUC":
-        probs = predict_probability(data, model, model_name)
         score = roc_auc_score(labels, probs)
 
+    elif score_name == "brier_score_loss":
+        score =brier_score_loss(labels, probs)
+
+    #scores using preds
     else:
-        preds = predict_class(data, model, model_name)
         if score_name == "accuracy":
             score = accuracy_score(labels, preds)
         elif score_name == "f1":
@@ -119,37 +128,80 @@ def calc_perf_score(data, labels, model, model_name: str, score_name: str):
         elif score_name == "average_class_accuracy":
             recall = recall_score(labels, preds, average=None)
             score = 2 / (1 / recall[0] + 1 / recall[1])
+        elif score_name == "precision_PPV":
+            precision = precision_score(labels, preds, average=None)
+            score = precision[1]
+        elif score_name == "NPV":
+            precision = precision_score(labels, preds, average=None)
+            score = precision[0]
+        elif score_name == "recall_sensitivity":
+            recall = recall_score(labels, preds, average=None)
+            score = recall[1]
+        elif score_name == "specificity":
+            recall = recall_score(labels, preds, average=None)
+            score = recall[0]
+
 
     return score
 
 
+def linear_shap_value(model):
+    """
+    Calculates Shapley values for the given training set and linear classifier model.
+ 
+    :param dataset: Training or test data.
+    :param model: Trained linear model.
+    :return: Shapley values
+    """
+    explainer = shap.LinearExplainer(model.best_model, model.X_tr, feature_dependence="independent")
+    shap_values = explainer.shap_values(model.X_te) 
+    
+    shap_values_mean_over_samples = np.mean(shap_values, axis=0)
+ 
+    return shap_values_mean_over_samples
+ 
 def calc_shap_values(dataset, model):
     """
     Calculates Shapley values for the given training set and tree boosting model.
-
+ 
     :param dataset: Training or test data.
     :param model: Trained tree boosting model.
     :return: Shapley values
     """
+    
     explainer = shap.TreeExplainer(model.best_model)
     cat_features = [
         list(model.X_tr).index(dataset.cat_preds[i])
         for i in range(len(dataset.cat_preds))
     ]
-
-    shap_values = explainer.shap_values(
-        cat.Pool(model.X_tr, model.y_tr, cat_features=cat_features)
-    )
-
+ 
+    shap_values = explainer.shap_values(cat.Pool(model.X_te, model.y_te, cat_features=cat_features))
+ 
     # Calculate average over samples (patients)
     shap_values_mean_over_samples = np.mean(shap_values, axis=0)
-
+ 
+    return shap_values_mean_over_samples
+    
+def calc_kernel_shap_values(model):
+    """
+    Calculates Shapley values for the given training set and model.
+ 
+    :param dataset: Training or test data.
+    :param model: Trained model.
+    :return: Shapley values
+    """
+    explainer = shap.KernelExplainer(model.best_model.predict_proba, model.X_tr)
+    shap_values = explainer.shap_values(model.X_te,l1_reg=0.0,nsamples=500)[0] #results are symmetric (-,+)
+    
+    # Calculate average over samples (patients)
+    shap_values_mean_over_samples = np.mean(shap_values, axis=0)
+ 
     return shap_values_mean_over_samples
 
 
 def calc_deep_taylor_values(model):
     """
-    Calculates deep taylor decomposition values for the given training set and 
+    Calculates deep taylor decomposition values for the given training set and
     Multilayer Perceptron (MLP) model.
 
     :param dataset: Training or test data.
@@ -177,7 +229,7 @@ def calc_deep_taylor_values(model):
 
     # Get the input the model was trained on
     seed_input = model.X_tr.values
-    # The deep taylor is bounded to a range which should be defined based on 
+    # The deep taylor is bounded to a range which should be defined based on
     # the input range:
     input_range = [min(seed_input.flatten()), max(seed_input.flatten())]
 
@@ -281,7 +333,7 @@ def plot_performance(scores, model_names, sub_type, path):
     plt.close(fig)
 
 
-def plot_features_rating(values, sub_type, path):
+def plot_features_rating(values, sub_type, path,xlabels):
     """
     Plots feature importance values as a seaborn barplot. Saves the created
     plot as a .png file.
@@ -313,16 +365,14 @@ def plot_features_rating(values, sub_type, path):
             ax=ax[0, i],
         )
 
-        if mdl == "Catboost":
-            ax[0, i].set_xlabel("|SHAP values|", size=9)
-        elif mdl == "MLP":
-            ax[0, i].set_xlabel("|deep Taylor values|", size=9)
-        else:
-            ax[0, i].set_xlabel("|weights|", size=9)
+        ax[0, i].set_xlabel("|%s|"%(xlabels[i]), size=9)
+        
+        if mdl.find('_') > 0:
+            mdl = mdl[:mdl.find('_')]
+            
         ax[0, i].set_title(
             mdl.replace("Catboost", "Tree Boosting").replace(
-                "Elasticnet", "Elastic Net"
-            ),
+                "Elasticnet", "Elastic Net"),
             size=10,
         )
     plt.suptitle("Clinical Features Importance Rating", size=12, y=1.02)
@@ -333,3 +383,22 @@ def plot_features_rating(values, sub_type, path):
         dpi=300,
     )
     plt.close(fig)
+    
+def config_handler(cfg):
+    """
+    Separates the explainability values from the models.
+        
+    :param cfg: Loaded config file.
+    """
+    explainability_measures = []
+    models_to_use = []
+    
+    for model in cfg["models to use"]:
+        models_to_use.append(list(model.keys())[0])
+        values = list(model.values())
+        if None not in values:            
+            explainability_measures.append(values[0])
+        else:
+            explainability_measures.append(values)
+            
+    return models_to_use,explainability_measures
