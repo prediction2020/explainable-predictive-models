@@ -22,7 +22,8 @@ from keras.layers import Dense, Dropout
 from keras.models import Sequential, load_model
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import GridSearchCV, ParameterGrid
-
+from sklearn import svm
+from sklearn.naive_bayes import GaussianNB
 from utils.helper_functions import calc_perf_score
 
 os.environ["KERAS_BACKEND"] = "tensorflow"
@@ -119,6 +120,75 @@ class Model(metaclass=ABCMeta):
         )
         return training_performance, test_performance
 
+
+class SVMC(Model):
+    """
+	A subclass of the Model metaclass used to represent a SVMC model.
+
+	.. py:meth:: SVMC.run_gridsearch()
+	.. py:meth:: SVMC.train()
+
+	"""
+
+
+    def run_gridsearch(self, cv, cv_score: str) -> None:
+        """
+		Performs a gridsearch over the tuning hyperparameters. Determines the 
+		best hyperparameters based on the average validation performance 
+		calculated over cross-validation folds.
+		:param cv: A cross-validarion generator that determines the 
+		cross-validation strategy.
+		:param cv_score: Measure to evaluate predictions on the validation set. 
+		"""
+        
+        model = svm.SVC(**self.fixed_params)
+     
+        gsearch = GridSearchCV(
+            estimator=model,
+            cv=cv,
+            param_grid=self.tuning_params,
+            scoring=cv_score.replace("AUC", "roc_auc"),
+            iid=True,
+            n_jobs=-1,
+        )
+        gsearch.fit(
+            self.X_tr.values.astype("float"), np.ravel(self.y_tr.values.astype("float"))
+        )
+
+        self.best_tuning_params = gsearch.best_params_
+
+    def train(self, use_gridsearch_results: bool = True) -> None:
+        """
+		Trains a SVMC model. 
+		:param use_gridsearch_results: Determines whether to use 
+		hyperparameters selected through gridsearch
+		"""
+        params = self.fixed_params.copy()
+        if use_gridsearch_results == True:
+            self.tuning_params = self.best_tuning_params
+
+        params.update(self.tuning_params)
+
+        self.best_model = svm.SVC(**params)
+                
+        self.best_model.fit(self.X_tr, np.ravel(self.y_tr))
+
+class NB(Model):
+    """
+	A subclass of the Model metaclass used to represent a Gaussian Naive Bayes model.
+
+	.. py:meth:: NB.train()
+
+	"""
+    def run_gridsearch(self) -> None:
+        pass
+
+    def train(self, **args):
+        """
+		Trains a Gaussian Naive Bayes model. 
+		"""
+        self.best_model = GaussianNB(**self.fixed_params)
+        self.best_model.fit(self.X_tr, np.ravel(self.y_tr))
 
 class GLM(Model):
     """
