@@ -8,10 +8,7 @@ Classification performance is evaluated using 10 different measures.
 
 The framework has been applied in these publications:
 
-https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0231166 *
-
-
-*(this project has its own github repo: https://github.com/prediction2020/explainable-predictive-models-old)
+https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0231166
 
 ## Manual
 Manual to this framework can be found [here](manual.md).
