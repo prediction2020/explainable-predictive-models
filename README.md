@@ -23,5 +23,8 @@ Manual to this framework can be found [here](manual.md).
 ## License
 This project is licensed under the [MIT license](LICENSE).
 
+## Contributors
+Esra Zihni, Adam Hilbert
+
 
 
